@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ttomiek_zadaca_1": {
+      "commandName": "Project",
+      "commandLineArgs": "-b DZ_1_brod.csv -v DZ_1_vez.csv -l DZ_1_luka.csv -r DZ_1_raspored.csv -z DZ_1_zahtjev_rezervacije.csv"
+    }
+  }
+}
