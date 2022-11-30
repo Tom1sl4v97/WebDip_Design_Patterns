@@ -9,8 +9,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public void dohvatiPodatkeDatoteke()
         {
-            string? nazivDatoteke = NaziviDatoteka.Instance.luka;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
+            string? putanjaDatoteke = NaziviDatoteka.Instance.luka;
             string[]? lines = null;
             try
             {
@@ -18,7 +17,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             }
             catch (Exception)
             {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
+                BrojacGreske.Instance.IspisGreske("Neispravna putanja do csv datoteke LUKE.");
                 Console.WriteLine("Izlazak iz aplikacije");
                 Environment.Exit(0);
             }
@@ -29,7 +28,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 provjeriDohvacenePodatke(lines);
             else
             {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
+                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak u csv datoteci LUKE.");
                 Console.WriteLine("Izlazak iz aplikacije!");
                 Environment.Exit(0);
             }
@@ -47,14 +46,14 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 }
                 catch (Exception e)
                 {
-                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + podatakLuke + " u datoteci: " + NaziviDatoteka.Instance.luka + " GRESKA: " + e.Message);
+                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + podatakLuke + " u csv datoteci LUKE, GRESKA: " + e.Message);
                     Console.WriteLine("Izlazak iz aplikacije!");
                     Environment.Exit(0);
                 }
             }
             else
             {
-                BrojacGreske.Instance.IspisGreske("Postoji više luka, a traži se samo jedna luka za pratiti u datoteci: " + NaziviDatoteka.Instance.luka);
+                BrojacGreske.Instance.IspisGreske("Postoji više luka, a traži se samo jedna luka za pratiti u csv datoteci LUKE.");
                 Console.WriteLine("Izlazak iz aplikacije!");
                 Environment.Exit(0);
             }

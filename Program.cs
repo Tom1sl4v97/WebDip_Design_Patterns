@@ -17,22 +17,7 @@ public class Aplikacija
         string popisNaredbi = napraviStringNaredbi(args);
         provjeriUcitajUneseniString(popisNaredbi);
 
-        CitanjeDatotekeInterface citanjeBrodova = new CitanjeBrodFactory().CreateCitac();
-        citanjeBrodova.dohvatiPodatkeDatoteke();
-        Console.WriteLine("");
-        CitanjeDatotekeInterface citanjeLuka = new CitanjeLukeFactory().CreateCitac();
-        citanjeLuka.dohvatiPodatkeDatoteke();
-        Console.WriteLine("");
-        CitanjeDatotekeInterface citanjeVeza = new CitanjeVezFactory().CreateCitac();
-        citanjeVeza.dohvatiPodatkeDatoteke();
-        Console.WriteLine("");
-        if (NaziviDatoteka.Instance.raspored != "")
-        {
-            CitanjeDatotekeInterface citanjeRasporeda = new CitanjeRasporedaFactory().CreateCitac();
-            citanjeRasporeda.dohvatiPodatkeDatoteke();
-        }
-
-        VirtualniSat.Instance.virtualnoVrijeme(PodaciDatoteka.Instance.getLuka().virtualnoVrijeme);
+        konfigurirajPotrebnePodatke();
 
         string regexPatternKomandi = "^(?=.*\\s?Q(?<krajPrograma>))?(?=.*\\s?I(?<status>))?(?=.*\\s?VR (?<virtualnoVrijeme>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2})))?(?=.*\\s?V (?<zauzetostVeza>(?<vrstaVeza>([A-Z]{2,2})) (?<statusVeza>[Z|S]) (?<datumOd>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2})) (?<datumDo>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2}))))?(?=.*\\s?UR (?<ucitajDatoteku>[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{3,1000}))?(?=.*\\s?ZP (?<zahtjevPriveza>(?<idBroda>[0-9]{1,3}) (?<trajanje>[0-9]{1,3})))?(?=.*\\s?ZD (?<zatraziDozvolu>[0-9]{1,3}))?";
 
@@ -64,6 +49,107 @@ public class Aplikacija
         }
 
         return stringNaredbi;
+    }
+
+    private static void provjeriUcitajUneseniString(string uneseniPodaci)
+    {
+        string pattern = @"^(?=.*\s?-l (?<luka>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-v (?<vez>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-b (?<brod>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-r (?<raspored>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))?.+";
+        var regex = new Regex(pattern);
+
+        while (true)
+        {
+            if (uneseniPodaci != null && uneseniPodaci != "")
+            {
+                Match match = regex.Match(uneseniPodaci);
+
+                if (match.Success)
+                {
+                    NaziviDatoteka.Instance.brod = match.Groups["brod"].Value;
+                    NaziviDatoteka.Instance.luka = match.Groups["luka"].Value;
+                    NaziviDatoteka.Instance.raspored = match.Groups["raspored"].Value;
+                    NaziviDatoteka.Instance.vez = match.Groups["vez"].Value;
+
+                    string? putanja = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    NaziviDatoteka.Instance.putanjaPrograma = putanja;
+
+                    break;
+                }
+                else
+                {
+                    BrojacGreske.Instance.IspisGreske("Uneseni podaci nisu ispravni, molimo unesite ponovno!");
+                }
+            }
+            else
+            {
+                BrojacGreske.Instance.IspisGreske("Prazan unos, molimo unesite potrebne podatke.");
+            }
+
+            uneseniPodaci = Console.ReadLine();
+        }
+    }
+
+    private static void konfigurirajPotrebnePodatke()
+    {
+        CitanjeDatotekeInterface citanjeBrodova = new CitanjeBrodFactory().CreateCitac();
+        citanjeBrodova.dohvatiPodatkeDatoteke();
+        Console.WriteLine("");
+        CitanjeDatotekeInterface citanjeLuka = new CitanjeLukeFactory().CreateCitac();
+        citanjeLuka.dohvatiPodatkeDatoteke();
+        Console.WriteLine("");
+        CitanjeDatotekeInterface citanjeVeza = new CitanjeVezFactory().CreateCitac();
+        citanjeVeza.dohvatiPodatkeDatoteke();
+        Console.WriteLine("");
+        if (NaziviDatoteka.Instance.raspored != "")
+        {
+            CitanjeDatotekeInterface citanjeRasporeda = new CitanjeRasporedaFactory().CreateCitac();
+            citanjeRasporeda.dohvatiPodatkeDatoteke();
+        }
+
+        VirtualniSat.Instance.virtualnoVrijeme(PodaciDatoteka.Instance.getLuka().virtualnoVrijeme);
+    }
+
+    private static void pregledStatusa()
+    {
+        potvrdaKomande = true;
+        ispisVirtualnogSata();
+
+        Console.WriteLine("\nID\tOV\tVRSTA\tCIJENA\tDULJINA\tSIRINA\tDUBINA\tSTATUS");
+
+        DateTime trenutnoVrijeme = VirtualniSat.Instance.virtualnoVrijeme();
+        List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
+        List<ZahtjevRezervacije> popisZahtjeva = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
+
+        //Prolazi kroz sve veze
+        foreach (Vez vez in PodaciDatoteka.Instance.getListaVeza())
+        {
+            int danUTjednu = (int)trenutnoVrijeme.DayOfWeek;
+            TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVrijeme);
+            List<Raspored> preklapanjeRasporedom = sviRasporedi.FindAll(x => x.idVez == vez.id && x.daniUTjednu == danUTjednu);
+            bool provjera = true;
+
+            foreach (Raspored r in preklapanjeRasporedom)
+            {
+                if (r.vrijemeOd <= vrijeme && r.vrijemeDo >= vrijeme)
+                {
+                    provjera = false;
+                }
+            }
+
+            foreach (ZahtjevRezervacije zr in popisZahtjeva)
+            {
+                DateTime pocetnoVrijeme = zr.datumVrijemeOd;
+                DateTime krajnjeVrijeme = zr.datumVrijemeOd.AddHours(zr.trajanjePrivezaUH);
+                if (pocetnoVrijeme <= trenutnoVrijeme && krajnjeVrijeme >= trenutnoVrijeme)
+                {
+                    popisZahtjeva.Remove(zr);
+                    provjera = false;
+                    break;
+                }
+            }
+
+            if (!provjera) ispisVeza(vez, "ZAUZETI");
+            else ispisVeza(vez, "SLOBODAN");
+        }
     }
 
     private static void zatraziDozvolu(int value)
@@ -151,59 +237,6 @@ public class Aplikacija
         citanjeZahtjevaRezervacije.dohvatiPodatkeDatoteke();
     }
 
-    private static void pregledStatusa()
-    {
-        potvrdaKomande = true;
-        ispisVirtualnogSata();
-        Console.WriteLine("\nID\tOV\tVRSTA\tCIJENA\tDULJINA\tSIRINA\tDUBINA\tSTATUS");
-
-        DateTime trenutnoVrijeme = VirtualniSat.Instance.virtualnoVrijeme();
-        List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
-        List<ZahtjevRezervacije> popisZahtjeva = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
-        List<ZahtjevRezervacije> pomocnaLista = new List<ZahtjevRezervacije>(popisZahtjeva);
-
-        //Prolazi kroz sve veze
-        foreach (Vez vez in PodaciDatoteka.Instance.getListaVeza())
-        {
-            int danUTjednu = (int)trenutnoVrijeme.DayOfWeek;
-            TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVrijeme);
-            List<Raspored> preklapanjeRasporedom = sviRasporedi.FindAll(x => x.idVez == vez.id && x.daniUTjednu == danUTjednu);
-            bool provjera = true;
-
-            foreach (Raspored r in preklapanjeRasporedom)
-            {
-                if (r.vrijemeOd <= vrijeme && r.vrijemeDo >= vrijeme)
-                {
-                    provjera = false;
-                }
-            }
-            if (!provjera)
-            {
-                ispisVeza(vez, "ZAUZETI");
-            }
-            else
-            {
-                provjera = true;
-
-                foreach (ZahtjevRezervacije zr in popisZahtjeva)
-                {
-                    DateTime pocetnoVrijeme = zr.datumVrijemeOd;
-                    DateTime krajnjeVrijeme = zr.datumVrijemeOd.AddHours(zr.trajanjePrivezaUH);
-                    if (pocetnoVrijeme <= trenutnoVrijeme && krajnjeVrijeme >= trenutnoVrijeme)
-                    {
-                        popisZahtjeva.Remove(zr);
-                        provjera = false;
-                        break;
-                    }
-                }
-                if (!provjera)
-                    ispisVeza(vez, "ZAUZETI");
-                else
-                    ispisVeza(vez, "SLOBODAN");
-            }
-        }
-    }
-
     private static void ispisVeza(Vez vez, string ostatakPoruke)
     {
         Console.WriteLine(vez.id + "\t" + vez.oznakaVeza + "\t" + vez.vrsta + "\t" + vez.cijenaVezaPoSatu + "\t" + vez.maksimalnaDuljina + "\t" + vez.maksimalnaSirina + "\t" + vez.maksimalnaDubina + "\t" + ostatakPoruke);
@@ -250,7 +283,7 @@ public class Aplikacija
             List<ZahtjevRezervacije> pomocnaListaZahtjeva = filtrirajZahtjeve(vrstaVeza);
 
             kreirajMetodu.pomocnaListaZahtjeva = filtrirajZahtjeve(vrstaVeza);
-            
+
             Console.WriteLine("\nID\tOV\tVRSTA\tCIJENA\tDULJINA\tSIRINA\tDUBINA\tSTATUS");
 
             foreach (Vez vez in popisOdgovarajucihVezova)
@@ -297,7 +330,6 @@ public class Aplikacija
     private static void postaviVirtualnoVrijeme(string value)
     {
         potvrdaKomande = true;
-        // Ispis virtualnog sata u formatu dd.MM.yyyy. HH:mm:ss
         ispisVirtualnogSata();
 
         try
@@ -317,43 +349,6 @@ public class Aplikacija
         ispisVirtualnogSata();
         Console.WriteLine("Kraj programa, izlazak iz aplikacije!");
         Environment.Exit(0);
-    }
-
-    private static void provjeriUcitajUneseniString(string popisNaredbi)
-    {
-        string pattern = @"^(?=.*\s?-l (?<luka>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-v (?<vez>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-b (?<brod>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-r (?<raspored>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))?.+";
-        var regex = new Regex(pattern);
-
-        while (true)
-        {
-            string? uneseniPodaci = popisNaredbi;
-
-            if (uneseniPodaci != null && uneseniPodaci != "")
-            {
-                Match match = regex.Match(uneseniPodaci);
-
-                if (match.Success)
-                {
-                    NaziviDatoteka.Instance.brod = match.Groups["brod"].Value;
-                    NaziviDatoteka.Instance.luka = match.Groups["luka"].Value;
-                    NaziviDatoteka.Instance.raspored = match.Groups["raspored"].Value;
-                    NaziviDatoteka.Instance.vez = match.Groups["vez"].Value;
-
-                    string? putanja = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                    NaziviDatoteka.Instance.putanjaPrograma = putanja;
-
-                    break;
-                }
-                else
-                {
-                    BrojacGreske.Instance.IspisGreske("Uneseni podaci nisu ispravni, molimo unesite ponovno!");
-                }
-            }
-            else
-            {
-                BrojacGreske.Instance.IspisGreske("Prazan unos, molimo unesite potrebne podatke.");
-            }
-        }
     }
 
     private static void ispisVirtualnogSata()

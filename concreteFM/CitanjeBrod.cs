@@ -9,8 +9,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public void dohvatiPodatkeDatoteke()
         {
-            string? nazivDatoteke = NaziviDatoteka.Instance.brod;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
+            string? putanjaDatoteke = NaziviDatoteka.Instance.brod;
             string[]? lines = null;
 
             try
@@ -19,7 +18,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             }
             catch (Exception)
             {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
+                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke csv datoteke brodova");
                 Console.WriteLine("Izlazak iz aplikacije");
                 Environment.Exit(0);
             }
@@ -30,7 +29,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 provjeriDohvacenePodatke(lines);
             else
             {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
+                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak iz csv datoteke brodova");
                 Console.WriteLine("Izlazak iz aplikacije!");
                 Environment.Exit(0);
             }
@@ -50,14 +49,15 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                     Brod? brod = popisBrodova.Find(x => x.id == trenutniId);
                     if (brod == null)
                     {
-                        kreirajObjekt(podaciRetka);
-                        Brod noviBrod = popisBrodova.Last();
+                        Brod noviBrod = kreirajObjekt(podaciRetka);
 
                         if (noviBrod.kapacitetPutnika == 0 && noviBrod.kapacitetTereta == 0 && noviBrod.kapacitetOsobnihVozila == 0)
                         {
                             BrojacGreske.Instance.IspisGreske("Navedeni ID broda: " + noviBrod.id + " nema postavljene kapacitete!");
                             continue;
                         }
+
+                        PodaciDatoteka.Instance.addNoviBrod(noviBrod);
                     }
                     else
                     {
@@ -66,12 +66,12 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 }
                 catch (Exception e)
                 {
-                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u datoteci: " + NaziviDatoteka.Instance.brod + " GRESKA: " + e.Message);
+                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u csv datoteci BRODOVA, GRESKA: " + e.Message);
                 }
             }
         }
 
-        private void kreirajObjekt(string[] podaciRetka)
+        private Brod kreirajObjekt(string[] podaciRetka)
         {
             Brod noviBrod = new();
 
@@ -90,7 +90,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             VrstaLuke vrstaLuke = new DohvatiVrstuLuke(noviBrod.vrsta);
             vrstaLuke.dohvatiVrstu();
 
-            PodaciDatoteka.Instance.addNoviBrod(noviBrod);
+            return noviBrod;
         }
 
     }
