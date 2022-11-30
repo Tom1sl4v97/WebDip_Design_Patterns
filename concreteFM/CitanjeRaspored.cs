@@ -8,8 +8,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public void dohvatiPodatkeDatoteke()
         {
-            string? nazivDatoteke = NaziviDatoteka.Instance.raspored;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
+            string? putanjaDatoteke = NaziviDatoteka.Instance.raspored;
             string[]? lines = null;
 
             try
@@ -18,7 +17,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             }
             catch (Exception)
             {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
+                BrojacGreske.Instance.IspisGreske("Neispravna putanja do csv datoteke RASPOREDA.");
             }
 
             var regex = new Regex(Raspored.PATTERN_INFO_RETKA_CSV);
@@ -27,7 +26,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 provjeriDohvacenePodatke(lines);
             else
             {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
+                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak u csv datoteci RASPOREDA.");
                 Console.WriteLine("Izlazak iz aplikacije!");
                 Environment.Exit(0);
             }
@@ -46,7 +45,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 }
                 catch (Exception e)
                 {
-                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u datoteci: " + NaziviDatoteka.Instance.raspored + " GRESKA: " + e.Message);
+                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u csv datoteci RASPOREDA, GRESKA: " + e.Message);
                 }
             }
         }
