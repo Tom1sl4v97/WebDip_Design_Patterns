@@ -69,7 +69,7 @@ public class Aplikacija
                     NaziviDatoteka.Instance.raspored = match.Groups["raspored"].Value;
                     NaziviDatoteka.Instance.vez = match.Groups["vez"].Value;
 
-                    string? putanja = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    string? putanja = Directory.GetCurrentDirectory();
                     NaziviDatoteka.Instance.putanjaPrograma = putanja;
 
                     break;
@@ -119,7 +119,6 @@ public class Aplikacija
         List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
         List<ZahtjevRezervacije> popisZahtjeva = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
 
-        //Prolazi kroz sve veze
         foreach (Vez vez in PodaciDatoteka.Instance.getListaVeza())
         {
             int danUTjednu = (int)trenutnoVrijeme.DayOfWeek;
@@ -149,6 +148,22 @@ public class Aplikacija
 
             if (!provjera) ispisVeza(vez, "ZAUZETI");
             else ispisVeza(vez, "SLOBODAN");
+        }
+    }
+
+    private static void postaviVirtualnoVrijeme(string value)
+    {
+        potvrdaKomande = true;
+        ispisVirtualnogSata();
+
+        try
+        {
+            VirtualniSat.Instance.virtualnoVrijeme(DateTime.Parse(value));
+            Console.WriteLine("Virtualno vrijeme postavljeno na: " + value);
+        }
+        catch (Exception e)
+        {
+            BrojacGreske.Instance.IspisGreske(e.Message);
         }
     }
 
@@ -325,22 +340,6 @@ public class Aplikacija
             }
         }
         return pomocnaListaZahtjeva;
-    }
-
-    private static void postaviVirtualnoVrijeme(string value)
-    {
-        potvrdaKomande = true;
-        ispisVirtualnogSata();
-
-        try
-        {
-            VirtualniSat.Instance.virtualnoVrijeme(DateTime.Parse(value));
-            Console.WriteLine("Virtualno vrijeme postavljeno na: " + value);
-        }
-        catch (Exception e)
-        {
-            BrojacGreske.Instance.IspisGreske(e.Message);
-        }
     }
 
     private static void krajPrograma()

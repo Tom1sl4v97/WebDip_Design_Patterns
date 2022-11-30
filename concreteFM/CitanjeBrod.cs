@@ -9,7 +9,8 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public void dohvatiPodatkeDatoteke()
         {
-            string? putanjaDatoteke = NaziviDatoteka.Instance.brod;
+            string? nazivDatoteke = NaziviDatoteka.Instance.brod;
+            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
             string[]? lines = null;
 
             try
@@ -18,7 +19,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             }
             catch (Exception)
             {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke csv datoteke brodova");
+                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
                 Console.WriteLine("Izlazak iz aplikacije");
                 Environment.Exit(0);
             }
@@ -29,7 +30,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 provjeriDohvacenePodatke(lines);
             else
             {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak iz csv datoteke brodova");
+                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
                 Console.WriteLine("Izlazak iz aplikacije!");
                 Environment.Exit(0);
             }
@@ -66,7 +67,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 }
                 catch (Exception e)
                 {
-                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u csv datoteci BRODOVA, GRESKA: " + e.Message);
+                    BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u datoteci: " + NaziviDatoteka.Instance.brod + " GRESKA: " + e.Message);
                 }
             }
         }
