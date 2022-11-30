@@ -1,13 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using ttomiek_zadaca_1;
-using ttomiek_zadaca_1.adapter;
-using ttomiek_zadaca_1.bridge;
 using ttomiek_zadaca_1.ConcreteFM;
 using ttomiek_zadaca_1.ConcrreteFM;
 using ttomiek_zadaca_1.@interface;
 using ttomiek_zadaca_1.klase;
+using ttomiek_zadaca_1.komandaV;
 using ttomiek_zadaca_1.singelton_class;
-using static ttomiek_zadaca_1.zajednickeMetode.ZajednickeMetode;
+using ttomiek_zadaca_1.zajednickeMetode;
 
 public class Aplikacija
 {
@@ -151,6 +150,11 @@ public class Aplikacija
         }
     }
 
+    private static void ispisVeza(Vez vez, string ostatakPoruke)
+    {
+        Console.WriteLine(vez.id + "\t" + vez.oznakaVeza + "\t" + vez.vrsta + "\t" + vez.cijenaVezaPoSatu + "\t" + vez.maksimalnaDuljina + "\t" + vez.maksimalnaSirina + "\t" + vez.maksimalnaDubina + "\t" + ostatakPoruke);
+    }
+
     private static void postaviVirtualnoVrijeme(string value)
     {
         potvrdaKomande = true;
@@ -160,6 +164,102 @@ public class Aplikacija
         {
             VirtualniSat.Instance.virtualnoVrijeme(DateTime.Parse(value));
             Console.WriteLine("Virtualno vrijeme postavljeno na: " + value);
+        }
+        catch (Exception e)
+        {
+            BrojacGreske.Instance.IspisGreske(e.Message);
+        }
+    }
+
+    private static void ispisZauzetostiVeza(string value)
+    {
+        potvrdaKomande = true;
+        ispisVirtualnogSata();
+
+        string regexPattern = "^(?<vrstaVeza>([A-Z]{2,2})) (?<statusVeza>[Z|S]) (?<datumOd>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2})) (?<datumDo>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2}))";
+        Match match = new Regex(regexPattern).Match(value);
+
+        string vrstaVeza = match.Groups["vrstaVeza"].Value;
+        string statusVeza = match.Groups["statusVeza"].Value;
+        DateTime datumOd = DateTime.Parse(match.Groups["datumOd"].Value);
+        DateTime datumDo = DateTime.Parse(match.Groups["datumDo"].Value);
+
+        List<ZahtjevRezervacije> popisListeZahtjeva = new List<ZahtjevRezervacije>();
+        List<Vez> popisOdgovarajucihVezova = PodaciDatoteka.Instance.getListaVeza().FindAll(x => x.vrsta == vrstaVeza);
+        
+        try
+        {
+            List<ZahtjevRezervacije> pomocnaListaZahtjeva = filtrirajZahtjeve(vrstaVeza);
+
+            popisListeZahtjeva = filtrirajZahtjeve(vrstaVeza);
+
+            Console.WriteLine("\nID\tOV\tVRSTA\tCIJENA\tDULJINA\tSIRINA\tDUBINA\tSTATUS");
+
+            foreach (Vez vez in popisOdgovarajucihVezova)
+            {
+                if (statusVeza == "Z")
+                {
+                    popisListeZahtjeva = ProvjeraZauzetihVezova.provjeraVezova(vez, datumOd, datumDo, pomocnaListaZahtjeva);
+                }
+                else if (statusVeza == "S")
+                {
+                    popisListeZahtjeva = ProvjeraSlobodnihVezova.provjeraVezova(vez, datumOd, datumDo, pomocnaListaZahtjeva);
+                }
+                else
+                {
+                    throw new Exception("Uneseni status veza je pogrešan: " + statusVeza);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            BrojacGreske.Instance.IspisGreske(e.Message);
+        }
+    }
+
+    private static List<ZahtjevRezervacije> filtrirajZahtjeve(string vrstaVeza)
+    {
+        List<Brod> sviBrodovi = new List<Brod>(PodaciDatoteka.Instance.getListaBrodova());
+        List<ZahtjevRezervacije> pomocnaListaZahtjeva = new List<ZahtjevRezervacije>();
+        foreach (ZahtjevRezervacije zahtjev in PodaciDatoteka.Instance.getListaZahtjevaRezervacije())
+        {
+            Brod? podaciBroda = sviBrodovi.Find(x => x.id == zahtjev.idBrod);
+            string vrstaVezaBroda = ZajednickeMetode.dohvatiVrstuLuke(podaciBroda.vrsta);
+            if (podaciBroda != null && vrstaVezaBroda == vrstaVeza)
+            {
+                pomocnaListaZahtjeva.Add(zahtjev);
+            }
+        }
+        return pomocnaListaZahtjeva;
+    }
+    
+    private static void ucitajPodatkeZahtjevaRezervacije(string nazivDatoteke)
+    {
+        potvrdaKomande = true;
+        ispisVirtualnogSata();
+
+        NaziviDatoteka.Instance.zahtjevRezervacije = nazivDatoteke;
+        CitanjeDatotekeInterface citanjeZahtjevaRezervacije = new CitanjeZahtjevaRezervacijeFactory().CreateCitac();
+        citanjeZahtjevaRezervacije.dohvatiPodatkeDatoteke();
+    }
+
+    private static void zahtjevPriveza(string value)
+    {
+        potvrdaKomande = true;
+        ispisVirtualnogSata();
+
+        string[] uneseniPodaci = value.Split(' ');
+
+        try
+        {
+            CitanjeZahtjevRezervacije czr = new CitanjeZahtjevRezervacije();
+            ZahtjevRezervacije zr = new();
+            zr.idBrod = int.Parse(uneseniPodaci[0]);
+            zr.datumVrijemeOd = VirtualniSat.Instance.virtualnoVrijeme();
+            zr.trajanjePrivezaUH = int.Parse(uneseniPodaci[1]);
+
+            czr.provjeraRasporeda(zr);
+            Console.WriteLine(PodaciDatoteka.Instance.getListaZahtjevaRezervacije().Count);
         }
         catch (Exception e)
         {
@@ -193,8 +293,7 @@ public class Aplikacija
         DateTime trenutnoVV = VirtualniSat.Instance.virtualnoVrijeme();
         int danUTjednu = (int)trenutnoVV.DayOfWeek;
         TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVV);
-        VrstaLuke vrstaLuke = new DohvatiVrstuLuke(brod.vrsta);
-        string vrstaVeza = vrstaLuke.dohvatiVrstu();
+        string vrstaVeza = ZajednickeMetode.dohvatiVrstuLuke(brod.vrsta);
 
         List<Raspored> sviRasporedi = PodaciDatoteka.Instance.getListaRasporeda();
         List<Raspored> popisRasporeda = new List<Raspored>(sviRasporedi.FindAll(x => x.idBrod == value && x.daniUTjednu == danUTjednu && x.vrijemeOd <= vrijeme && x.vrijemeDo >= vrijeme));
@@ -217,131 +316,7 @@ public class Aplikacija
             }
         }
     }
-
-    private static void zahtjevPriveza(string value)
-    {
-        potvrdaKomande = true;
-        ispisVirtualnogSata();
-
-        string[] uneseniPodaci = value.Split(' ');
-
-        try
-        {
-            CitanjeZahtjevRezervacije czr = new CitanjeZahtjevRezervacije();
-            ZahtjevRezervacije zr = new();
-            zr.idBrod = int.Parse(uneseniPodaci[0]);
-            zr.datumVrijemeOd = VirtualniSat.Instance.virtualnoVrijeme();
-            zr.trajanjePrivezaUH = int.Parse(uneseniPodaci[1]);
-
-            czr.provjeraRasporeda(zr);
-            Console.WriteLine(PodaciDatoteka.Instance.getListaZahtjevaRezervacije().Count);
-        }
-        catch (Exception e)
-        {
-            BrojacGreske.Instance.IspisGreske(e.Message);
-        }
-    }
-
-    private static void ucitajPodatkeZahtjevaRezervacije(string nazivDatoteke)
-    {
-        potvrdaKomande = true;
-        ispisVirtualnogSata();
-
-        NaziviDatoteka.Instance.zahtjevRezervacije = nazivDatoteke;
-        CitanjeDatotekeInterface citanjeZahtjevaRezervacije = new CitanjeZahtjevaRezervacijeFactory().CreateCitac();
-        citanjeZahtjevaRezervacije.dohvatiPodatkeDatoteke();
-    }
-
-    private static void ispisVeza(Vez vez, string ostatakPoruke)
-    {
-        Console.WriteLine(vez.id + "\t" + vez.oznakaVeza + "\t" + vez.vrsta + "\t" + vez.cijenaVezaPoSatu + "\t" + vez.maksimalnaDuljina + "\t" + vez.maksimalnaSirina + "\t" + vez.maksimalnaDubina + "\t" + ostatakPoruke);
-    }
-
-    private static Raspored? dohvatiMoguciRapored(ZahtjevRezervacije zahtjev)
-    {
-        List<Raspored> popisRasporeda = PodaciDatoteka.Instance.getListaRasporeda();
-        int danUTjednu = (int)VirtualniSat.Instance.virtualnoVrijeme().DayOfWeek;
-        TimeOnly virtualnoVrijeme = TimeOnly.FromDateTime(VirtualniSat.Instance.virtualnoVrijeme());
-
-        //Želim pronaći ako postoji koja rezervacija kako bi dobio ispravni vez i njegov ID
-        Raspored? moguciRaspored = popisRasporeda.Find(x =>
-        x.idBrod == zahtjev.idBrod &&
-        x.daniUTjednu == danUTjednu &&
-        x.vrijemeOd <= virtualnoVrijeme &&
-        x.vrijemeDo >= virtualnoVrijeme
-        );
-
-        return moguciRaspored;
-    }
-
-    private static void ispisZauzetostiVeza(string value)
-    {
-        potvrdaKomande = true;
-        ispisVirtualnogSata();
-
-        string regexPattern = "^(?<vrstaVeza>([A-Z]{2,2})) (?<statusVeza>[Z|S]) (?<datumOd>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2})) (?<datumDo>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2}))";
-        Match match = new Regex(regexPattern).Match(value);
-
-        string vrstaVeza = match.Groups["vrstaVeza"].Value;
-        string statusVeza = match.Groups["statusVeza"].Value;
-        DateTime datumOd = DateTime.Parse(match.Groups["datumOd"].Value);
-        DateTime datumDo = DateTime.Parse(match.Groups["datumDo"].Value);
-
-        BridgeDostupnostiVeza bridgeDostupnostiVeza;
-        KreirajMetodu kreirajMetodu = new KreirajMetodu();
-        kreirajMetodu.datumOd = datumOd;
-        kreirajMetodu.datumDo = datumDo;
-
-        List<Vez> popisOdgovarajucihVezova = PodaciDatoteka.Instance.getListaVeza().FindAll(x => x.vrsta == vrstaVeza);
-        try
-        {
-            List<ZahtjevRezervacije> pomocnaListaZahtjeva = filtrirajZahtjeve(vrstaVeza);
-
-            kreirajMetodu.pomocnaListaZahtjeva = filtrirajZahtjeve(vrstaVeza);
-
-            Console.WriteLine("\nID\tOV\tVRSTA\tCIJENA\tDULJINA\tSIRINA\tDUBINA\tSTATUS");
-
-            foreach (Vez vez in popisOdgovarajucihVezova)
-            {
-                kreirajMetodu.vez = vez;
-                if (statusVeza == "Z")
-                {
-                    bridgeDostupnostiVeza = new BridgeDostupnostiVeza(new ProvjeraZauzetihVezova());
-                    kreirajMetodu.pomocnaListaZahtjeva = kreirajMetodu.ispisVezova(bridgeDostupnostiVeza);
-                }
-                else if (statusVeza == "S")
-                {
-                    bridgeDostupnostiVeza = new BridgeDostupnostiVeza(new ProvjeraSlobodnihVezova());
-                    kreirajMetodu.pomocnaListaZahtjeva = kreirajMetodu.ispisVezova(bridgeDostupnostiVeza);
-                }
-                else
-                {
-                    throw new Exception("Uneseni status veza je pogrešan: " + statusVeza);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            BrojacGreske.Instance.IspisGreske(e.Message);
-        }
-    }
-
-    private static List<ZahtjevRezervacije> filtrirajZahtjeve(string vrstaVeza)
-    {
-        List<Brod> sviBrodovi = new List<Brod>(PodaciDatoteka.Instance.getListaBrodova());
-        List<ZahtjevRezervacije> pomocnaListaZahtjeva = new List<ZahtjevRezervacije>();
-        foreach (ZahtjevRezervacije zahtjev in PodaciDatoteka.Instance.getListaZahtjevaRezervacije())
-        {
-            Brod? podaciBroda = sviBrodovi.Find(x => x.id == zahtjev.idBrod);
-            VrstaLuke vrstaLuke = new DohvatiVrstuLuke(podaciBroda.vrsta);
-            if (podaciBroda != null && vrstaLuke.dohvatiVrstu() == vrstaVeza)
-            {
-                pomocnaListaZahtjeva.Add(zahtjev);
-            }
-        }
-        return pomocnaListaZahtjeva;
-    }
-
+    
     private static void krajPrograma()
     {
         potvrdaKomande = true;
@@ -349,7 +324,7 @@ public class Aplikacija
         Console.WriteLine("Kraj programa, izlazak iz aplikacije!");
         Environment.Exit(0);
     }
-
+   
     private static void ispisVirtualnogSata()
     {
         Console.WriteLine("Trenutno virtualno vrijeme: " + VirtualniSat.Instance.virtualnoVrijeme().ToString("dd.MM.yyyy. HH:mm:ss "));

@@ -1,13 +1,16 @@
-﻿
-using ttomiek_zadaca_1.@interface;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ttomiek_zadaca_1.klase;
 using ttomiek_zadaca_1.zajednickeMetode;
 
-namespace ttomiek_zadaca_1.bridge
+namespace ttomiek_zadaca_1.komandaV
 {
-    public class ProvjeraZauzetihVezova : DostupnostVezaInterface
+    public class ProvjeraZauzetihVezova
     {
-        public List<ZahtjevRezervacije> naredbaDostupnosti(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva)
+        public static List<ZahtjevRezervacije> provjeraVezova(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva)
         {
             int pocetniDan = (int)datumOd.DayOfWeek;
             int krajnjiDan = (int)datumDo.DayOfWeek;
@@ -27,14 +30,14 @@ namespace ttomiek_zadaca_1.bridge
                 if (pocetnoVrijeme <= datumDo && krajnjeVrijeme >= datumOd)
                 {
                     pomocnaListaZahtjeva.Remove(zahtjev);
-                    ZajednickeMetode.ispisVeza(vez, "ZAUZET\tod: " + ZajednickeMetode.formDate(pocetnoVrijeme) + "\tdo: " + ZajednickeMetode.formDate(krajnjeVrijeme));
+                    ZajednickeMetode.ispisVeza(vez, "ZAUZET\tod: " + formDate(pocetnoVrijeme) + "\tdo: " + formDate(krajnjeVrijeme));
                     break;
                 }
             }
             return pomocnaListaZahtjeva;
         }
 
-        private void ispisiZautetostRaspored(int pocetniDan, int krajnjiDan, Vez vez, DateTime datumOd, DateTime datumDo)
+        private static void ispisiZautetostRaspored(int pocetniDan, int krajnjiDan, Vez vez, DateTime datumOd, DateTime datumDo)
         {
             List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
             for (int i = pocetniDan; i <= krajnjiDan; i++)

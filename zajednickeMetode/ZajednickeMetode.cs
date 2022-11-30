@@ -14,15 +14,19 @@ namespace ttomiek_zadaca_1.zajednickeMetode
             return vrijeme.ToString("dd.MM.yyyy. HH:mm:ss");
         }
 
-        public enum daniUTjednu
+        public static string dohvatiVrstuLuke(string vrstaBroda)
         {
-            NEDJELJA,
-            PONEDJELJAK,
-            UTORAK,
-            SRIJEDA,
-            CETVRTAK,
-            PETAK,
-            SUBOTA
+            switch (vrstaBroda)
+            {
+                case "TR" or "KA" or "KL" or "KR":
+                    return "PU";
+                case "RI" or "TE":
+                    return "PO";
+                case "JA" or "BR" or "RO":
+                    return "OS";
+                default:
+                    throw new Exception("Neispravna oznaka vrste broda: " + vrstaBroda);
+            }
         }
     }
 }

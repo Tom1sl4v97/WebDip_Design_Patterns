@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using ttomiek_zadaca_1.adapter;
 using ttomiek_zadaca_1.@interface;
 using ttomiek_zadaca_1.klase;
+using ttomiek_zadaca_1.zajednickeMetode;
 
 namespace ttomiek_zadaca_1.ConcrreteFM
 {
@@ -88,8 +88,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             noviBrod.kapacitetOsobnihVozila = int.Parse(podaciRetka[9]);
             noviBrod.kapacitetTereta = float.Parse(podaciRetka[10].Replace(',', '.'));
 
-            VrstaLuke vrstaLuke = new DohvatiVrstuLuke(noviBrod.vrsta);
-            vrstaLuke.dohvatiVrstu();
+            ZajednickeMetode.dohvatiVrstuLuke(noviBrod.vrsta);
 
             return noviBrod;
         }

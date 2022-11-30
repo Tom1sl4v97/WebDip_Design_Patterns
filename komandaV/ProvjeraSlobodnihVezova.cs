@@ -1,13 +1,16 @@
-﻿
-using ttomiek_zadaca_1.@interface;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ttomiek_zadaca_1.klase;
 using ttomiek_zadaca_1.zajednickeMetode;
 
-namespace ttomiek_zadaca_1.bridge
+namespace ttomiek_zadaca_1.komandaV
 {
-    public class ProvjeraSlobodnihVezova : DostupnostVezaInterface
+    public class ProvjeraSlobodnihVezova
     {
-        public List<ZahtjevRezervacije> naredbaDostupnosti(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva)
+        public static List<ZahtjevRezervacije> provjeraVezova(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva)
         {
             string dioOdgovora = "SLOBODAN\t";
             bool provjeraVeza = true;
@@ -43,8 +46,8 @@ namespace ttomiek_zadaca_1.bridge
 
             return pomocnaListaZahtjeva;
         }
-        
-        private string formDate(DateTime datumOd)
+
+        private static string formDate(DateTime datumOd)
         {
             return ZajednickeMetode.formDate(datumOd);
         }
