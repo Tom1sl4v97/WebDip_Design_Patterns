@@ -4,40 +4,13 @@ using ttomiek_zadaca_1.klase;
 
 namespace ttomiek_zadaca_1.ConcrreteFM
 {
-    public class CitanjeVez : CitanjeDatotekeInterface
+    public class CitanjeVez : OsnovneMetode
     {
         private int brojacPU = 0;
         private int brojacPO = 0;
         private int brojacOS = 0;
-        public void dohvatiPodatkeDatoteke()
-        {
-            string? nazivDatoteke = NaziviDatoteka.Instance.vez;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
-            string[]? lines = null;
-            try
-            {
-                lines = File.ReadAllLines(putanjaDatoteke);
-            }
-            catch (Exception)
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
-                Console.WriteLine("Izlazak iz aplikacije");
-                Environment.Exit(0);
-            }
-
-            var regex = new Regex(Vez.PATTERN_INFO_RETKA_CSV);
-            Match match = regex.Match(lines.First());
-            if (match.Success)
-                provjeriDohvacenePodatke(lines);
-            else
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
-                Console.WriteLine("Izlazak iz aplikacije!");
-                Environment.Exit(0);
-            }
-        }
-
-        private void provjeriDohvacenePodatke(string[] lines)
+        
+        public override void provjeriDohvacenePodatke(string[] lines)
         {
             List<Vez> popisVezova = PodaciDatoteka.Instance.getListaVeza();
             Vez noviVez = new();

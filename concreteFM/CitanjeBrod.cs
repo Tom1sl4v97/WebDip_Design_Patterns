@@ -5,38 +5,9 @@ using ttomiek_zadaca_1.zajednickeMetode;
 
 namespace ttomiek_zadaca_1.ConcrreteFM
 {
-    public class CitanjeBrod : CitanjeDatotekeInterface
+    public class CitanjeBrod : OsnovneMetode
     {
-        public void dohvatiPodatkeDatoteke()
-        {
-            string? nazivDatoteke = NaziviDatoteka.Instance.brod;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
-            string[]? lines = null;
-
-            try
-            {
-                lines = File.ReadAllLines(putanjaDatoteke);
-            }
-            catch (Exception)
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
-                Console.WriteLine("Izlazak iz aplikacije");
-                Environment.Exit(0);
-            }
-
-            var regex = new Regex(Brod.PATTERN_INFO_RETKA_CSV);
-            Match match = regex.Match(lines.First());
-            if (match.Success) 
-                provjeriDohvacenePodatke(lines);
-            else
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
-                Console.WriteLine("Izlazak iz aplikacije!");
-                Environment.Exit(0);
-            }
-        }
-
-        private void provjeriDohvacenePodatke(string[] lines)
+        public override void provjeriDohvacenePodatke(string[] lines)
         {
             List<Brod> popisBrodova = PodaciDatoteka.Instance.getListaBrodova();
             foreach (string line in lines)

@@ -7,36 +7,9 @@ using static ttomiek_zadaca_1.zajednickeMetode.ZajednickeMetode;
 
 namespace ttomiek_zadaca_1.ConcrreteFM
 {
-    public class CitanjeZahtjevRezervacije : CitanjeDatotekeInterface
+    public class CitanjeZahtjevRezervacije : OsnovneMetode
     {
-        public void dohvatiPodatkeDatoteke()
-        {
-            string? nazivDatoteke = NaziviDatoteka.Instance.zahtjevRezervacije;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
-            string[]? lines = null;
-
-            try
-            {
-                lines = File.ReadAllLines(putanjaDatoteke);
-            }
-            catch (Exception)
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
-            }
-
-            var regex = new Regex(ZahtjevRezervacije.PATTERN_INFO_RETKA_CSV);
-            Match match = regex.Match(lines.First());
-            if (match.Success)
-                provjeriDohvacenePodatke(lines);
-            else
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
-                Console.WriteLine("Izlazak iz aplikacije!");
-                Environment.Exit(0);
-            }
-        }
-
-        private void provjeriDohvacenePodatke(string[] lines)
+        public override void provjeriDohvacenePodatke(string[] lines)
         {
             foreach (string line in lines)
             {

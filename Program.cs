@@ -90,18 +90,19 @@ public class Aplikacija
     private static void konfigurirajPotrebnePodatke()
     {
         CitanjeDatotekeInterface citanjeBrodova = new CitanjeBrodFactory().CreateCitac();
-        citanjeBrodova.dohvatiPodatkeDatoteke();
+        citanjeBrodova.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.brod, Brod.PATTERN_INFO_RETKA_CSV);
         Console.WriteLine("");
         CitanjeDatotekeInterface citanjeLuka = new CitanjeLukeFactory().CreateCitac();
-        citanjeLuka.dohvatiPodatkeDatoteke();
+        citanjeLuka.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.luka, Luka.PATTERN_INFO_RETKA_CSV);
         Console.WriteLine("");
         CitanjeDatotekeInterface citanjeVeza = new CitanjeVezFactory().CreateCitac();
-        citanjeVeza.dohvatiPodatkeDatoteke();
+        citanjeVeza.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.vez, Vez.PATTERN_INFO_RETKA_CSV);
         Console.WriteLine("");
-        if (NaziviDatoteka.Instance.raspored != "")
+        string? nazivRasporeda = NaziviDatoteka.Instance.raspored;
+        if (nazivRasporeda != "" && nazivRasporeda != null)
         {
             CitanjeDatotekeInterface citanjeRasporeda = new CitanjeRasporedaFactory().CreateCitac();
-            citanjeRasporeda.dohvatiPodatkeDatoteke();
+            citanjeRasporeda.dohvatiPodatkeDatoteke(nazivRasporeda, Raspored.PATTERN_INFO_RETKA_CSV);
         }
 
         VirtualniSat.Instance.virtualnoVrijeme(PodaciDatoteka.Instance.getLuka().virtualnoVrijeme);
@@ -240,7 +241,7 @@ public class Aplikacija
 
         NaziviDatoteka.Instance.zahtjevRezervacije = nazivDatoteke;
         CitanjeDatotekeInterface citanjeZahtjevaRezervacije = new CitanjeZahtjevaRezervacijeFactory().CreateCitac();
-        citanjeZahtjevaRezervacije.dohvatiPodatkeDatoteke();
+        citanjeZahtjevaRezervacije.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.zahtjevRezervacije, ZahtjevRezervacije.PATTERN_INFO_RETKA_CSV);
     }
 
     private static void zahtjevPriveza(string value)

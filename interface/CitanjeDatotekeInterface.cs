@@ -8,6 +8,6 @@ namespace ttomiek_zadaca_1.@interface
 {
     public interface CitanjeDatotekeInterface
     {
-        public void dohvatiPodatkeDatoteke();
+        public void dohvatiPodatkeDatoteke(string nazivDatoteke, string pattern);
     }
 }

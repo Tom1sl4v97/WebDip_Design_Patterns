@@ -61,5 +61,10 @@ namespace ttomiek_zadaca_1.komandaV
             }
 
         }
+
+        private static string formDate(DateTime datumOd)
+        {
+            return ZajednickeMetode.formDate(datumOd);
+        }
     }
 }
