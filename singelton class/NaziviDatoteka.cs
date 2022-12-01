@@ -28,6 +28,9 @@ namespace ttomiek_zadaca_1
         public string? raspored { get; set; }
         public string? vez { get; set; }
         public string? zahtjevRezervacije { get; set; }
+        public string? kanal { get; set; }
+        public string? mol { get; set; }
+        public string? molVezovi { get; set; }
         public string? putanjaPrograma { get; set; }
     }
 }

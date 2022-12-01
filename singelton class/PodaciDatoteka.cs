@@ -32,6 +32,9 @@ namespace ttomiek_zadaca_1
         private readonly List<Raspored> _listaRasporeda = new();
         private readonly List<Vez> _listaVeza = new();
         private readonly List<ZahtjevRezervacije> _listaZahtjevaRezervacije = new();
+        private readonly List<Kanal> _listaKanala = new();
+        private readonly List<Mol> _listaMolova = new();
+        private readonly List<MolVez> _listaMolVezova = new();
 
         public void addNoviBrod(Brod newBrod)
         {
@@ -83,5 +86,34 @@ namespace ttomiek_zadaca_1
             return _listaZahtjevaRezervacije;
         }
 
+        public void addNoviKanal(Kanal newKanal)
+        {
+            _listaKanala.Add(newKanal);
+        }
+
+        public List<Kanal> getListaKanala()
+        {
+            return _listaKanala;
+        }
+
+        public void addNoviMol(Mol newMol)
+        {
+            _listaMolova.Add(newMol);
+        }
+
+        public List<Mol> getListaMolova()
+        {
+            return _listaMolova;
+        }
+
+        public void addNoviMolVez(MolVez newMolVez)
+        {
+            _listaMolVezova.Add(newMolVez);
+        }
+
+        public List<MolVez> getListaMolVezova()
+        {
+            return _listaMolVezova;
+        }
     }
 }
