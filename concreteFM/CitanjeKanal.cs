@@ -9,7 +9,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public override void provjeriDohvacenePodatke(string[] lines)
         {
-            List<Kanal> popisKanala = new List<Kanal>(PodaciDatoteka.Instance.getListaKanala());
+            List<Kanal> popisKanala =PodaciDatoteka.Instance.getListaKanala();
             foreach (string line in lines)
             {
                 if (line == lines.First()) continue;
@@ -18,12 +18,23 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 try
                 {
                     int trenutniId = int.Parse(podaciRetka[0]);
-                    Kanal? postojeciKanal = popisKanala.Find(x => x.idKanal == trenutniId);
-                    if (postojeciKanal == null)
+                    int trenutnaFrekvencija = int.Parse(podaciRetka[1]);
+                    Kanal? postojeciKanal = popisKanala.Find(x => x.idKanal == trenutniId || x.frekvencija == trenutnaFrekvencija);
+                    if (postojeciKanal == null || postojeciKanal.idKanal != trenutniId)
                     {
-                        Kanal noviKanal = kreirajObjekt(lines);
-                        
-                        PodaciDatoteka.Instance.addNoviKanal(noviKanal);
+                        if (postojeciKanal == null || postojeciKanal.frekvencija != trenutnaFrekvencija)
+                        {
+                            Kanal noviKanal = new Kanal();
+
+                            noviKanal.idKanal = trenutniId;
+                            noviKanal.frekvencija = trenutnaFrekvencija;
+                            noviKanal.maksimalanBroj = int.Parse(podaciRetka[2]);
+
+                            PodaciDatoteka.Instance.addNoviKanal(noviKanal);
+                        }else
+                        {
+                            BrojacGreske.Instance.IspisGreske("Navedena frekvencija: " + trenutnaFrekvencija + " već postoji u popisu kanala.");
+                        }
                     }
                     else
                     {
@@ -35,17 +46,6 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                     BrojacGreske.Instance.IspisGreske("Neispravni redak: " + line + " u datoteci: " + NaziviDatoteka.Instance.mol + " GRESKA: " + e.Message);
                 }
             }
-        }
-
-        private Kanal kreirajObjekt(string[] lines)
-        {
-            Kanal noviKanal = new Kanal();
-
-            noviKanal.idKanal = int.Parse(lines[0]);
-            noviKanal.frekvencija = int.Parse(lines[1]);
-            noviKanal.maksimalanBroj = int.Parse(lines[2]);
-
-            return noviKanal;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public override void provjeriDohvacenePodatke(string[] lines)
         {
-            List<Mol> popisMolova = new List<Mol>(PodaciDatoteka.Instance.getListaMolova());
+            List<Mol> popisMolova = PodaciDatoteka.Instance.getListaMolova();
             foreach (string line in lines)
             {
                 if (line == lines.First()) continue;

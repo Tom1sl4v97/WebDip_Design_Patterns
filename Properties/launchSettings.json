@@ -2,7 +2,7 @@
   "profiles": {
     "ttomiek_zadaca_1": {
       "commandName": "Project",
-      "commandLineArgs": "-b C:\\Users\\franj\\OneDrive\\Desktop\\DZ_1_brod.csv -v DZ_1_vez.csv -l C:\\Users\\franj\\OneDrive\\Desktop\\DZ_1_luka.csv -r DZ_1_raspored.csv -z DZ_1_zahtjev_rezervacije.csv"
+      "commandLineArgs": "-b DZ_2_brod.csv -v DZ_2_vez.csv -l DZ_2_luka.csv -r DZ_2_raspored.csv -m DZ_2_mol.csv -k DZ_2_kanal.csv -mv DZ_2_mol_vez.csv"
     }
   }
 }
