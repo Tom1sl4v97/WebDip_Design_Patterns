@@ -1,42 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using ttomiek_zadaca_1.@interface;
-using ttomiek_zadaca_1.klase;
-using ttomiek_zadaca_1.singelton_class;
+﻿using ttomiek_zadaca_1.klase;
 using static ttomiek_zadaca_1.zajednickeMetode.ZajednickeMetode;
 
 namespace ttomiek_zadaca_1.ConcrreteFM
 {
-    public class CitanjeZahtjevRezervacije : CitanjeDatotekeInterface
+    public class CitanjeZahtjevRezervacije : OsnovneMetode
     {
-        public void dohvatiPodatkeDatoteke()
-        {
-            string? nazivDatoteke = NaziviDatoteka.Instance.zahtjevRezervacije;
-            string putanjaDatoteke = NaziviDatoteka.Instance.putanjaPrograma + "\\" + nazivDatoteke;
-            string[]? lines = null;
-
-            try
-            {
-                lines = File.ReadAllLines(putanjaDatoteke);
-            }
-            catch (Exception)
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravna putanja do datoteke: " + nazivDatoteke);
-            }
-
-            var regex = new Regex(ZahtjevRezervacije.PATTERN_INFO_RETKA_CSV);
-            Match match = regex.Match(lines.First());
-            if (match.Success)
-                provjeriDohvacenePodatke(lines);
-            else
-            {
-                BrojacGreske.Instance.IspisGreske("Neispravan format ili nedostaje informativni redak: " + nazivDatoteke);
-                Console.WriteLine("Izlazak iz aplikacije!");
-                Environment.Exit(0);
-            }
-        }
-
-        private void provjeriDohvacenePodatke(string[] lines)
+        public override void provjeriDohvacenePodatke(string[] lines)
         {
             foreach (string line in lines)
             {
@@ -73,7 +42,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             Brod? podaciBroda = dohvatiBrodPremaID(idBroda);
             Luka podaciLuke = PodaciDatoteka.Instance.getLuka();
             //Filtriranje liste vezova po vrsti broda
-            string odgovarajucaVrstaVeza = dohvatiOdgovarajucuVrstuVeza(podaciBroda.vrsta);
+            string odgovarajucaVrstaVeza = dohvatiVrstuLuke(podaciBroda.vrsta);
             List<Vez> listaVezovaPremaVrsti = PodaciDatoteka.Instance.getListaVeza().FindAll(x => x.vrsta == odgovarajucaVrstaVeza);
 
             //Filtriranje po dimenzijama broda
@@ -83,21 +52,6 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             if (popisOdgovarajucihVezova.Count == 0)
             {
                 throw new Exception("Ne postoji prikladni vez za specifikacije brod s ID: " + idBroda);
-            }
-        }
-
-        private string dohvatiOdgovarajucuVrstuVeza(string vrstaBroda)
-        {
-            switch (vrstaBroda)
-            {
-                case "TR" or "KA" or "KL" or "KR":
-                    return "PU";
-                case "RI" or "TE":
-                    return "PO";
-                case "JA" or "BR" or "RO":
-                    return "OS";
-                default:
-                    throw new Exception("Neispravna oznaka vrste broda: " + vrstaBroda);
             }
         }
 
@@ -112,41 +66,60 @@ namespace ttomiek_zadaca_1.ConcrreteFM
 
         public void provjeraRasporeda(ZahtjevRezervacije noviZahtjevRezervacije)
         {
-            int idBroda = noviZahtjevRezervacije.idBrod;
-            DateTime trenutnoVV = noviZahtjevRezervacije.datumVrijemeOd;
-            TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVV);
-            int danUTjednu = (int)trenutnoVV.DayOfWeek;
-            
-            Brod? podaciBroda = dohvatiBrodPremaID(idBroda);
+            List<Vez> popisOdgovarajucihVezova = dohvatiSlobodneVezove(noviZahtjevRezervacije);
 
-            List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
-            List<Raspored> popisRasporeda = new List<Raspored>(sviRasporedi.FindAll(x => x.daniUTjednu == danUTjednu && x.vrijemeOd <= vrijeme && x.vrijemeDo >= vrijeme));
-
-            List<Vez> pomocnaLista = new List<Vez>(dohvatiSlobodneVezove(popisRasporeda, podaciBroda));
-
-            int brojacZauzetihVezova = 0;
-            DateTime krajnjeVrijeme = trenutnoVV.AddHours(noviZahtjevRezervacije.trajanjePrivezaUH);
-            List<ZahtjevRezervacije> sviZahtejvi = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
-            List<ZahtjevRezervacije> popisZauzetih = sviZahtejvi.FindAll(x => x.idBrod == idBroda);
-
-            provjeraDuplikata(popisZauzetih, trenutnoVV, krajnjeVrijeme);
-
-            foreach (ZahtjevRezervacije zr in sviZahtejvi)
+            //TODO Treba odabrati najbolji vez ...
+            if (popisOdgovarajucihVezova.Count > 0)
             {
-                DateTime kv = zr.datumVrijemeOd.AddHours(zr.trajanjePrivezaUH);
-                if (trenutnoVV <= kv && krajnjeVrijeme >= zr.datumVrijemeOd)
-                    brojacZauzetihVezova++;
-            }
-
-            if (brojacZauzetihVezova < pomocnaLista.Count)
+                noviZahtjevRezervacije.idVeza = popisOdgovarajucihVezova[0].id;
                 PodaciDatoteka.Instance.addNoviZahtjevRezervacije(noviZahtjevRezervacije);
+                //zapisiDnevnikRada();
+            }
             else
                 throw new Exception("Nema slobodnih vezova u luci");
         }
 
+        public List<Vez> dohvatiSlobodneVezove(ZahtjevRezervacije noviZahtjevRezervacije)
+        {
+            int idBroda = noviZahtjevRezervacije.idBrod;
+            DateTime trenutnoVV = noviZahtjevRezervacije.datumVrijemeOd;
+
+            //Provjera duplikata
+            DateTime krajnjeVrijeme = trenutnoVV.AddHours(noviZahtjevRezervacije.trajanjePrivezaUH);
+            List<ZahtjevRezervacije> sviZahtejvi = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
+            List<ZahtjevRezervacije> popisZauzetih = sviZahtejvi.FindAll(x => x.idBrod == idBroda);
+            provjeraDuplikata(popisZauzetih, trenutnoVV, krajnjeVrijeme);
+
+            //Dohvaćam listu mogućih vezova za privez broda
+            Brod? podaciBroda = dohvatiBrodPremaID(idBroda);
+            List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
+            TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVV);
+            int danUTjednu = (int)trenutnoVV.DayOfWeek;
+            List<Raspored> popisRasporeda = new List<Raspored>(sviRasporedi.FindAll(x => x.daniUTjednu == danUTjednu && x.vrijemeOd <= vrijeme && x.vrijemeDo >= vrijeme));
+            //Nije filtrirano po zahtjevima rezervacija
+            List<Vez> popisMogucihVezova = new List<Vez>(dohvatiSlobodneVezove(popisRasporeda, podaciBroda));
+
+            //Dohvaćam koliko se je brodova privezalo na traženu vrstu veza u vremenu kada se novi brod želi privezati na vez
+            //Piftrirano prema zahtjevima rezervacije
+            List<Vez> popisOdgovarajucihVezova = new List<Vez>(popisMogucihVezova);
+            foreach (Vez vez in popisMogucihVezova)
+            {
+                foreach (ZahtjevRezervacije zr in sviZahtejvi)
+                {
+                    DateTime kv = zr.datumVrijemeOd.AddHours(zr.trajanjePrivezaUH);
+                    if (vez.id == zr.idVeza && trenutnoVV <= kv && krajnjeVrijeme >= zr.datumVrijemeOd)
+                    {
+                        popisOdgovarajucihVezova.Remove(vez);
+                        break;
+                    }
+                }
+            }
+            return popisOdgovarajucihVezova;
+        }
+        
         private List<Vez> dohvatiSlobodneVezove(List<Raspored> popisRasporeda, Brod podaciBroda)
         {
-            string odgovarajucaVrstaVeza = dohvatiOdgovarajucuVrstuVeza(podaciBroda.vrsta);
+            string odgovarajucaVrstaVeza = dohvatiVrstuLuke(podaciBroda.vrsta);
 
             List<Vez> sviVezovi = new List<Vez>(PodaciDatoteka.Instance.getListaVeza().FindAll(x => x.vrsta == odgovarajucaVrstaVeza));
             List<Vez> popisVezova = sviVezovi.FindAll(x => x.maksimalnaDuljina >= podaciBroda.duljina && x.maksimalnaSirina >= podaciBroda.sirina && x.maksimalnaDubina >= podaciBroda.gaz);

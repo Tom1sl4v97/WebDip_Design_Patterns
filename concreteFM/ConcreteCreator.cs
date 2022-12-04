@@ -52,4 +52,31 @@ namespace ttomiek_zadaca_1.ConcreteFM
             return citac;
         }
     }
+
+    public class CitanjeKanalFactory : CitacDatotekeFactory
+    {
+        protected override CitanjeDatotekeInterface MakeCitac()
+        {
+            CitanjeDatotekeInterface citac = new CitanjeKanal();
+            return citac;
+        }
+    }
+
+    public class CitanjeMolFactory : CitacDatotekeFactory
+    {
+        protected override CitanjeDatotekeInterface MakeCitac()
+        {
+            CitanjeDatotekeInterface citac = new CitanjeMola();
+            return citac;
+        }
+    }
+
+    public class CitanjeMolVezFactory : CitacDatotekeFactory
+    {
+        protected override CitanjeDatotekeInterface MakeCitac()
+        {
+            CitanjeDatotekeInterface citac = new CitanjeMolVez();
+            return citac;
+        }
+    }
 }

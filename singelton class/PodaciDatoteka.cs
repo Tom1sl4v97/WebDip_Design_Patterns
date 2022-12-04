@@ -35,6 +35,7 @@ namespace ttomiek_zadaca_1
         private readonly List<Kanal> _listaKanala = new();
         private readonly List<Mol> _listaMolova = new();
         private readonly List<MolVez> _listaMolVezova = new();
+        private readonly List<DnevnikRada> _listaDnevnikaRada = new();
 
         public void addNoviBrod(Brod newBrod)
         {
@@ -71,6 +72,10 @@ namespace ttomiek_zadaca_1
             _listaVeza.Add(newVez);
         }
 
+        public void removeVez(Vez vez){
+            _listaVeza.Remove(vez);
+        }
+        
         public List<Vez> getListaVeza()
         {
             return _listaVeza;
@@ -114,6 +119,16 @@ namespace ttomiek_zadaca_1
         public List<MolVez> getListaMolVezova()
         {
             return _listaMolVezova;
+        }
+
+        public void addNoviDnevnikRada(DnevnikRada newDnevnikRada)
+        {
+            _listaDnevnikaRada.Add(newDnevnikRada);
+        }
+
+        public List<DnevnikRada> getListaDnevnikaRada()
+        {
+            return _listaDnevnikaRada;
         }
     }
 }

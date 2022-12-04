@@ -12,5 +12,6 @@ namespace ttomiek_zadaca_1.klase
         public int idBrod { get; set; }
         public DateTime datumVrijemeOd { get; set; }
         public int trajanjePrivezaUH { get; set; }
+        public int idVeza { get; set; }
     }
 }
