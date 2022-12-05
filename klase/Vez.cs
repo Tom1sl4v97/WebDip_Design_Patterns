@@ -33,8 +33,8 @@ namespace ttomiek_zadaca_1.klase
             }
         }
         public decimal cijenaVezaPoSatu { get; set; }
-        public float maksimalnaDuljina { get; set; }
-        public float maksimalnaSirina { get; set; }
-        public float maksimalnaDubina { get; set; }
+        public double maksimalnaDuljina { get; set; }
+        public double maksimalnaSirina { get; set; }
+        public double maksimalnaDubina { get; set; }
     }
 }

@@ -6,7 +6,6 @@ namespace ttomiek_zadaca_1.ConcrreteFM
     {
         public override void provjeriDohvacenePodatke(string[] lines)
         {
-            List<MolVez> popisMolVez = PodaciDatoteka.Instance.getListaMolVezova();
             foreach (string line in lines)
             {
                 if (line == lines.First()) continue;
@@ -14,25 +13,32 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 string[] podaciRetka = line.Split(';');
                 try
                 {
+                    List<MolVez> popisMolVez = new List<MolVez>(PodaciDatoteka.Instance.getListaMolVezova());
                     int trenutniIdMola = int.Parse(podaciRetka[0]);
                     MolVez? postojeciKanal = popisMolVez.Find(x => x.idMol == trenutniIdMola);
                     if (postojeciKanal == null)
                     {
-                        MolVez noviMolVez = new MolVez();
-                        noviMolVez.idMol = trenutniIdMola;
-
                         string[] idVezova = podaciRetka[1].Split(',');
                         for (int i = 0; i < idVezova.Length; i++)
                         {
                             try
                             {
+                                List<Vez> popisSvihVezova = new List<Vez>(PodaciDatoteka.Instance.getListaVeza());
                                 int idVeza = int.Parse(idVezova[i]);
-                                Vez? postojeciVez = PodaciDatoteka.Instance.getListaVeza().Find(x => x.id == idVeza);
+                                Vez? postojeciVez = popisSvihVezova.Find(x => x.id == idVeza);
 
                                 if(postojeciVez != null)
                                 {
-                                    noviMolVez.idVez = idVeza;
-                                    PodaciDatoteka.Instance.addNoviMolVez(noviMolVez);
+                                    if (!provjeriPostojili(idVeza))
+                                    {
+                                        MolVez noviMolVez = new MolVez();
+                                        noviMolVez.idMol = trenutniIdMola;
+                                        noviMolVez.idVez = idVeza;
+                                        PodaciDatoteka.Instance.addNoviMolVez(noviMolVez);
+                                    }else
+                                    {
+                                        BrojacGreske.Instance.IspisGreske("Navedeni ID veze: " + idVeza + " već postoji u popisu veza molova.");
+                                    }
                                 }
                                 else
                                 {
@@ -59,20 +65,26 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             filtrirajVisakVezova();
         }
 
+        private bool provjeriPostojili(int idVeza)
+        {
+            List<MolVez> popisSvihMolVezova = new List<MolVez>(PodaciDatoteka.Instance.getListaMolVezova());
+            MolVez odgovarajuciMolVeza = popisSvihMolVezova.Find(x => x.idVez == idVeza);
+
+            if (odgovarajuciMolVeza != null)
+                return true;
+            return false;
+        }
+
         private void filtrirajVisakVezova()
         {
             List<Vez> popisSvihVezova = new List<Vez>(PodaciDatoteka.Instance.getListaVeza());
-            List<MolVez> popisSvihMolVez = new List<MolVez>(PodaciDatoteka.Instance.getListaMolVezova());
             int counter = 0;
             foreach (Vez vez in popisSvihVezova){
-                foreach (MolVez molVez in popisSvihMolVez)
+                if (!provjeriPostojili(vez.id))
                 {
-                    if (vez.id == molVez.idVez)
-                    {
-                        PodaciDatoteka.Instance.removeVez(vez);
-                        counter++;
-                        break;
-                    }
+                    provjeriPostojili(vez.id);
+                    counter++;
+                    PodaciDatoteka.Instance.removeVez(vez);
                 }
             }
 
@@ -81,6 +93,17 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 BrojacGreske.Instance.IspisGreske("Ukupno je izbrisano " + counter + " veza iz popisa veza, jer ne posijeduju dodijeljeni kanal.");
             }
 
+        }
+
+        private void ispisiSveMolVeze()
+        {
+            List<MolVez> popis = new List<MolVez>(PodaciDatoteka.Instance.getListaMolVezova());
+            List<MolVez> popissvih = new List<MolVez>(popis);
+
+            foreach (MolVez mv in popissvih)
+            {
+                Console.WriteLine(mv.idVez + " " + mv.idMol);
+            }
         }
     }
 }

@@ -36,6 +36,7 @@ namespace ttomiek_zadaca_1.komandaV
         private static void ispisiZautetostRaspored(int pocetniDan, int krajnjiDan, Vez vez, DateTime datumOd, DateTime datumDo)
         {
             List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
+            
             for (int i = pocetniDan; i <= krajnjiDan; i++)
             {
                 List<Raspored> popisZauzetih = new List<Raspored>();

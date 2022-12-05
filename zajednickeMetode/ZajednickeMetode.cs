@@ -26,7 +26,6 @@ namespace ttomiek_zadaca_1.zajednickeMetode
         {
             if (Tablice.Instance.P)
             {
-                List<Vez> popisVezova = PodaciDatoteka.Instance.getListaVeza();
                 Console.WriteLine("---------------------------------------------------------------------------");
                 Console.WriteLine(String.Format("{0,-14} {1,59}", "UKUPNO REDAKA:", broj));
                 Console.WriteLine("---------------------------------------------------------------------------");
@@ -64,6 +63,82 @@ namespace ttomiek_zadaca_1.zajednickeMetode
             noviZapis.slobodan = slobodan;
 
             PodaciDatoteka.Instance.addNoviDnevnikRada(noviZapis);
+        }
+
+        public static List<Vez> ispisTrenutnogStatusa(List<Vez> popisSvihVezova, DateTime trenutnoVrijeme, bool sviVezovi)
+        {
+            List<Vez> popisZauzetihVezova = new List<Vez>();
+            List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
+            List<ZahtjevRezervacije> popisZahtjeva = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
+            
+            foreach (Vez vez in popisSvihVezova)
+            {
+                int danUTjednu = (int)trenutnoVrijeme.DayOfWeek;
+                TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVrijeme);
+                List<Raspored> preklapanjeRasporedom = sviRasporedi.FindAll(x => x.idVez == vez.id && x.daniUTjednu == danUTjednu);
+                bool provjera = true;
+
+                foreach (Raspored r in preklapanjeRasporedom)
+                {
+                    if (r.vrijemeOd <= vrijeme && r.vrijemeDo >= vrijeme)
+                    {
+                        provjera = false;
+                    }
+                }
+
+                List<ZahtjevRezervacije> popisOdgovarajucihZahtjeva = popisZahtjeva.FindAll(x => x.idVeza == vez.id);
+
+                foreach (ZahtjevRezervacije zr in popisOdgovarajucihZahtjeva)
+                {
+                    DateTime pocetnoVrijeme = zr.datumVrijemeOd;
+                    DateTime krajnjeVrijeme = zr.datumVrijemeOd.AddHours(zr.trajanjePrivezaUH);
+                    if (pocetnoVrijeme <= trenutnoVrijeme && krajnjeVrijeme >= trenutnoVrijeme)
+                    {
+                        popisZahtjeva.Remove(zr);
+                        provjera = false;
+                        break;
+                    }
+                }
+                
+                if (sviVezovi)
+                {
+                    if (!provjera) 
+                        ispisVeza(vez, "ZAUZETI");
+                    else 
+                        ispisVeza(vez, "SLOBODAN");
+                }else
+                {
+                    if (!provjera) 
+                        popisZauzetihVezova.Add(vez);
+                }
+                
+            }
+            return popisZauzetihVezova;
+        }
+
+        public static void ispisSvihRasporeda()
+        {
+            List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
+
+            Raspored prethodni = new Raspored();
+
+            Console.WriteLine(String.Format("{0,-7} | {1,-7} | {2,-6} | {3,-6} | {4,-20}", "ID-VEZ", "ID-BROD", "OD", "DO", "DANI U TJEDNU"));
+            Console.WriteLine("---------------------------------------------------------------------------");
+
+            string daniUtjednu = sviRasporedi[0].daniUTjednu.ToString();
+            foreach (Raspored r in sviRasporedi)
+            {
+                if (prethodni.idVez == r.idVez && prethodni.idBrod == r.idBrod && prethodni.vrijemeOd == r.vrijemeOd && prethodni.vrijemeDo == r.vrijemeDo)
+                {
+                    daniUtjednu += ", " + r.daniUTjednu;
+                }
+                else
+                {
+                    Console.WriteLine(String.Format("{0,-7} | {1,-7} | {2,-6} | {3,-6} | {4,-20}", prethodni.idVez, prethodni.idBrod, prethodni.vrijemeOd, prethodni.vrijemeDo, daniUtjednu));
+                    daniUtjednu = r.daniUTjednu.ToString();
+                }
+                prethodni = r;
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using ttomiek_zadaca_1.klase;
 using ttomiek_zadaca_1.komandaV;
 using ttomiek_zadaca_1.observer;
 using ttomiek_zadaca_1.singelton_class;
+using ttomiek_zadaca_1.visitor;
 using ttomiek_zadaca_1.zajednickeMetode;
 
 public class Aplikacija
@@ -14,6 +15,7 @@ public class Aplikacija
     private static bool _potvrdaKomande = false;
     private static bool _provjeraFrekvencije = true;
     private static int _counterStatusaVeza = 0;
+    private static int _ukupnoZauzetihVezova = 0;
     public static void Main(string[] args)
     {
         string popisNaredbi = napraviStringNaredbi(args);
@@ -58,7 +60,7 @@ public class Aplikacija
 
     private static void provjeriUcitajUneseniString(string uneseniPodaci)
     {
-        string pattern = @"^(?=.*\s?-l (?<luka>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-v (?<vez>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-b (?<brod>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-r (?<raspored>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-m (?<mol>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-k (?<kanal>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-mv (?<molVezovi>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))?.+";
+        string pattern = @"^(?=.*\s?-l (?<luka>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-v (?<vez>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-b (?<brod>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-r (?<raspored>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-m (?<mol>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-k (?<kanal>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-mv (?<molVezovi>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000})).+";
         var regex = new Regex(pattern);
 
         while (true)
@@ -77,8 +79,8 @@ public class Aplikacija
                     NaziviDatoteka.Instance.mol = match.Groups["mol"].Value;
                     NaziviDatoteka.Instance.molVezovi = match.Groups["molVezovi"].Value;
 
-                    string? putanja = Directory.GetCurrentDirectory();
-                    //string? putanja = "C:\\Users\\franj\\OneDrive\\Desktop\\podaci";
+                    //string? putanja = Directory.GetCurrentDirectory();
+                    string? putanja = "C:\\Users\\franj\\OneDrive\\Desktop\\podaci";
 
                     NaziviDatoteka.Instance.putanjaPrograma = putanja;
 
@@ -102,35 +104,35 @@ public class Aplikacija
     {
         CitanjeDatotekeInterface citanjeBrodova = new CitanjeBrodFactory().CreateCitac();
         citanjeBrodova.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.brod, Brod.PATTERN_INFO_RETKA_CSV);
-        Console.WriteLine("Učitani podaci za BRODOVE\n");
+        Console.WriteLine("Učitani podaci za BRODOVE: " + PodaciDatoteka.Instance.getListaBrodova().Count + "\n");
 
         CitanjeDatotekeInterface citanjeLuka = new CitanjeLukeFactory().CreateCitac();
         citanjeLuka.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.luka, Luka.PATTERN_INFO_RETKA_CSV);
-        Console.WriteLine("Učitani podaci za LUKE\n");
+        Console.WriteLine("Učitani podaci za LUKE: " + PodaciDatoteka.Instance.getLuka().naziv + "\n");
 
         CitanjeDatotekeInterface citanjeVeza = new CitanjeVezFactory().CreateCitac();
         citanjeVeza.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.vez, Vez.PATTERN_INFO_RETKA_CSV);
-        Console.WriteLine("Učitani podaci za VEZOVE\n");
+        Console.WriteLine("Učitani podaci za VEZOVE: " + PodaciDatoteka.Instance.getListaVeza().Count + "\n");
 
         string? nazivRasporeda = NaziviDatoteka.Instance.raspored;
         if (nazivRasporeda != "" && nazivRasporeda != null)
         {
             CitanjeDatotekeInterface citanjeRasporeda = new CitanjeRasporedaFactory().CreateCitac();
             citanjeRasporeda.dohvatiPodatkeDatoteke(nazivRasporeda, Raspored.PATTERN_INFO_RETKA_CSV);
-            Console.WriteLine("Učitani podaci za RASPORED\n");
+            Console.WriteLine("Učitani podaci za RASPORED: " + PodaciDatoteka.Instance.getListaRasporeda().Count + "\n");
         }
 
         CitanjeDatotekeInterface citanjeKanala = new CitanjeKanalFactory().CreateCitac();
         citanjeKanala.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.kanal, Kanal.PATTERN_INFO_RETKA_CSV);
-        Console.WriteLine("Učitani podaci za KANAL\n");
+        Console.WriteLine("Učitani podaci za KANAL: " + PodaciDatoteka.Instance.getListaKanala().Count + "\n");
 
         CitanjeDatotekeInterface citanjeMolova = new CitanjeMolFactory().CreateCitac();
         citanjeMolova.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.mol, Mol.PATTERN_INFO_RETKA_CSV);
-        Console.WriteLine("Učitani podaci za MOL\n");
+        Console.WriteLine("Učitani podaci za MOL: " + PodaciDatoteka.Instance.getListaMolova().Count + "\n");
 
         CitanjeDatotekeInterface citanjeMolVezovi = new CitanjeMolVezFactory().CreateCitac();
         citanjeMolVezovi.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.molVezovi, MolVez.PATTERN_INFO_RETKA_CSV);
-        Console.WriteLine("Učitani podaci za MOL VEZOVI\n");
+        Console.WriteLine("Učitani podaci za MOL VEZOVI: " + PodaciDatoteka.Instance.getListaMolVezova().Count + "\n");
 
         VirtualniSat.Instance.virtualnoVrijeme(PodaciDatoteka.Instance.getLuka().virtualnoVrijeme);
     }
@@ -141,42 +143,13 @@ public class Aplikacija
         ispisVirtualnogSata();
 
         ZajednickeMetode.ispisZaglavljaStatusa();
-
+        
+        List<Vez> popisSvihVezova = new List<Vez>(PodaciDatoteka.Instance.getListaVeza());
         DateTime trenutnoVrijeme = VirtualniSat.Instance.virtualnoVrijeme();
-        List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
-        List<ZahtjevRezervacije> popisZahtjeva = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
-        List<Vez> popisSvihVezova = PodaciDatoteka.Instance.getListaVeza();
+        bool sviVezovi = true;
 
-        foreach (Vez vez in popisSvihVezova)
-        {
-            int danUTjednu = (int)trenutnoVrijeme.DayOfWeek;
-            TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVrijeme);
-            List<Raspored> preklapanjeRasporedom = sviRasporedi.FindAll(x => x.idVez == vez.id && x.daniUTjednu == danUTjednu);
-            bool provjera = true;
+        ZajednickeMetode.ispisTrenutnogStatusa(popisSvihVezova, trenutnoVrijeme, sviVezovi);
 
-            foreach (Raspored r in preklapanjeRasporedom)
-            {
-                if (r.vrijemeOd <= vrijeme && r.vrijemeDo >= vrijeme)
-                {
-                    provjera = false;
-                }
-            }
-
-            foreach (ZahtjevRezervacije zr in popisZahtjeva)
-            {
-                DateTime pocetnoVrijeme = zr.datumVrijemeOd;
-                DateTime krajnjeVrijeme = zr.datumVrijemeOd.AddHours(zr.trajanjePrivezaUH);
-                if (pocetnoVrijeme <= trenutnoVrijeme && krajnjeVrijeme >= trenutnoVrijeme)
-                {
-                    popisZahtjeva.Remove(zr);
-                    provjera = false;
-                    break;
-                }
-            }
-
-            if (!provjera) ZajednickeMetode.ispisVeza(vez, "ZAUZETI");
-            else ZajednickeMetode.ispisVeza(vez, "SLOBODAN");
-        }
         ZajednickeMetode.ispisPodnozjaStatusa(popisSvihVezova.Count);
     }
 
@@ -200,6 +173,8 @@ public class Aplikacija
     {
         _potvrdaKomande = true;
         ispisVirtualnogSata();
+
+        ZajednickeMetode.ispisSvihRasporeda();
 
         string regexPattern = "^(?<vrstaVeza>([A-Z]{2,2})) (?<statusVeza>[Z|S]) (?<datumOd>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2})) (?<datumDo>(\\d{2}).(\\d{2}).(\\d{4}). (\\d{2}):(\\d{2}):(\\d{2}))";
         Match match = new Regex(regexPattern).Match(value);
@@ -270,6 +245,7 @@ public class Aplikacija
         NaziviDatoteka.Instance.zahtjevRezervacije = nazivDatoteke;
         CitanjeDatotekeInterface citanjeZahtjevaRezervacije = new CitanjeZahtjevaRezervacijeFactory().CreateCitac();
         citanjeZahtjevaRezervacije.dohvatiPodatkeDatoteke(NaziviDatoteka.Instance.zahtjevRezervacije, ZahtjevRezervacije.PATTERN_INFO_RETKA_CSV);
+        Console.WriteLine("Učitani podaci za ZAHTJEVE REZERVACIJE: " + PodaciDatoteka.Instance.getListaZahtjevaRezervacije().Count);
     }
 
     private static void zahtjevPriveza(string value)
@@ -339,7 +315,7 @@ public class Aplikacija
         TimeOnly vrijeme = TimeOnly.FromDateTime(trenutnoVV);
         string vrstaVeza = ZajednickeMetode.dohvatiVrstuLuke(brod.vrsta);
 
-        List<Raspored> sviRasporedi = PodaciDatoteka.Instance.getListaRasporeda();
+        List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
         List<Raspored> popisRasporeda = new List<Raspored>(sviRasporedi.FindAll(x => x.idBrod == value && x.daniUTjednu == danUTjednu && x.vrijemeOd <= vrijeme && x.vrijemeDo >= vrijeme));
         if (popisRasporeda.Count == 0)
             throw new Exception("Nema rasporeda za traženi brod (ID: " + brod.id + ") u trenutnom vremenu: " + trenutnoVV.ToString("dd.MM.yyyy. HH:mm:ss"));
@@ -453,7 +429,28 @@ public class Aplikacija
     private static void ukupniBrojZauzetihVezova(string value)
     {
         _potvrdaKomande = true;
-        Console.WriteLine(value);
+        ispisVirtualnogSata();
+
+        DateTime vrijeme = DateTime.Parse(value);
+        _ukupnoZauzetihVezova = 0;
+
+        ZajednickeMetode.ispisZaglavljaStatusa();
+
+        ObjectStructure visitor = new ObjectStructure();
+
+        visitor.Attach(new ConcreteElementZauzetost("PU", vrijeme));
+        visitor.Attach(new ConcreteElementRedniBroj("PU"));
+
+        visitor.Attach(new ConcreteElementZauzetost("PO", vrijeme));
+        visitor.Attach(new ConcreteElementRedniBroj("PO"));
+
+        visitor.Attach(new ConcreteElementZauzetost("OS", vrijeme));
+        visitor.Attach(new ConcreteElementRedniBroj("OS"));
+
+        ConcreteVisitor1 v1 = new ConcreteVisitor1();
+        visitor.Accept(v1);
+
+        ZajednickeMetode.ispisPodnozjaStatusa(_ukupnoZauzetihVezova);
     }
 
     private static void uredivanjeTablica(string z, string p, string rb)
@@ -495,5 +492,10 @@ public class Aplikacija
     public static void povecajCounterVezova()
     {
         _counterStatusaVeza++;
+    }
+
+    public static void povecajUkupniBrojZauzetihVezova(int broj)
+    {
+        _ukupnoZauzetihVezova += broj;
     }
 }

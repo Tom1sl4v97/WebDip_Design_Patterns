@@ -31,7 +31,7 @@ namespace ttomiek_zadaca_1.ConcrreteFM
 
             noviZahtjevRezervacije.idBrod = int.Parse(podaciRetka[0]);
             noviZahtjevRezervacije.datumVrijemeOd = DateTime.Parse(podaciRetka[1]);
-            noviZahtjevRezervacije.trajanjePrivezaUH = int.Parse(podaciRetka[2]);
+            noviZahtjevRezervacije.trajanjePrivezaUH = double.Parse(podaciRetka[2].Replace(',', '.'));
 
             return noviZahtjevRezervacije;
         }
@@ -68,15 +68,69 @@ namespace ttomiek_zadaca_1.ConcrreteFM
         {
             List<Vez> popisOdgovarajucihVezova = dohvatiSlobodneVezove(noviZahtjevRezervacije);
 
+            Vez najboljiVez = pronadjiNajboljiVez(popisOdgovarajucihVezova, noviZahtjevRezervacije);
+                
             //TODO Treba odabrati najbolji vez ...
             if (popisOdgovarajucihVezova.Count > 0)
             {
-                noviZahtjevRezervacije.idVeza = popisOdgovarajucihVezova[0].id;
+                noviZahtjevRezervacije.idVeza = najboljiVez.id;
                 PodaciDatoteka.Instance.addNoviZahtjevRezervacije(noviZahtjevRezervacije);
                 //zapisiDnevnikRada();
             }
             else
                 throw new Exception("Nema slobodnih vezova u luci");
+        }
+
+        private Vez pronadjiNajboljiVez(List<Vez> popisOdgovarajucihVezova, ZahtjevRezervacije noviZahtjevRezervacije)
+        {
+            List<double> koeficijent = new List<double>();
+            Brod noviBrod = PodaciDatoteka.Instance.getListaBrodova().Find(x => x.id == noviZahtjevRezervacije.idBrod);
+
+            for(int i = 0; i < popisOdgovarajucihVezova.Count; i++)
+            {
+                double razlika1 = popisOdgovarajucihVezova[i].maksimalnaSirina - noviBrod.sirina;
+                double razlika2 = popisOdgovarajucihVezova[i].maksimalnaDuljina - noviBrod.duljina;
+                double razlika3 = popisOdgovarajucihVezova[i].maksimalnaDubina - noviBrod.gaz;
+                koeficijent.Add(razlika1 * razlika2 * razlika3);
+            }
+            
+            List<Vez> najboljiVezovi = new List<Vez>();
+            double najmanji = koeficijent.Max();
+            for (int j = 0; j < koeficijent.Count; j++)
+            {
+                if(koeficijent[j] <= najmanji)
+                {
+                    najmanji = koeficijent[j];
+                    najboljiVezovi.Add(popisOdgovarajucihVezova[j]);
+                }
+            }
+
+            if (najboljiVezovi.Count == 1)
+            {
+                ispisNajboljeg(noviBrod, najboljiVezovi[0]);
+                return najboljiVezovi[0];
+            }
+            else
+            {
+                int index = 0;
+                for (int z = 0; z < najboljiVezovi.Count; z++)
+                {
+                    if(najboljiVezovi[z].cijenaVezaPoSatu < najboljiVezovi[index].cijenaVezaPoSatu)
+                    {
+                        index = z;
+                    }
+                }
+                ispisNajboljeg(noviBrod, najboljiVezovi[index]);
+                return najboljiVezovi[index];
+            }
+        }
+
+        private void ispisNajboljeg(Brod? noviBrod, Vez vez)
+        {
+            Console.WriteLine("Podaci broda: ");
+            Console.WriteLine(noviBrod.id + " | " + noviBrod.naziv + " | " + noviBrod.vrsta + " | " + noviBrod.duljina + " | " + noviBrod.sirina + " | " + noviBrod.gaz);
+            // id;oznaka_veza;vrsta;cijena_veza_po_satu;maksimalna_duljina;maksimalna_sirina;maksimalna_dubina
+            Console.WriteLine(vez.id + " | " + vez.oznakaVeza + " | " + vez.vrsta + " | " + vez.cijenaVezaPoSatu + " | " + vez.maksimalnaDuljina + " | " + vez.maksimalnaSirina + " | " + vez.maksimalnaDubina);
         }
 
         public List<Vez> dohvatiSlobodneVezove(ZahtjevRezervacije noviZahtjevRezervacije)

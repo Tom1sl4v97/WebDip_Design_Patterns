@@ -46,12 +46,12 @@
                 _vrsta = value;
             }
         }
-        public float duljina { get; set; }
-        public float sirina { get; set; }
-        public float gaz { get; set; }
-        public float maksimalnaBrzina { get; set; }
+        public double duljina { get; set; }
+        public double sirina { get; set; }
+        public double gaz { get; set; }
+        public double maksimalnaBrzina { get; set; }
         public int kapacitetPutnika { get; set; }
         public int kapacitetOsobnihVozila { get; set; }
-        public float kapacitetTereta { get; set; }
+        public double kapacitetTereta { get; set; }
     }
 }

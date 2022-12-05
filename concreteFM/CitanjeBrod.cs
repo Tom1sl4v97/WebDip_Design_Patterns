@@ -51,13 +51,13 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             noviBrod.oznakaBroda = podaciRetka[1];
             noviBrod.naziv = podaciRetka[2];
             noviBrod.vrsta = podaciRetka[3];
-            noviBrod.duljina = float.Parse(podaciRetka[4].Replace(',', '.'));
-            noviBrod.sirina = float.Parse(podaciRetka[5].Replace(',', '.'));
-            noviBrod.gaz = float.Parse(podaciRetka[6].Replace(',', '.'));
-            noviBrod.maksimalnaBrzina = float.Parse(podaciRetka[7].Replace(',', '.'));
+            noviBrod.duljina = double.Parse(podaciRetka[4].Replace(',', '.'));
+            noviBrod.sirina = double.Parse(podaciRetka[5].Replace(',', '.'));
+            noviBrod.gaz = double.Parse(podaciRetka[6].Replace(',', '.'));
+            noviBrod.maksimalnaBrzina = double.Parse(podaciRetka[7].Replace(',', '.'));
             noviBrod.kapacitetPutnika = int.Parse(podaciRetka[8]);
             noviBrod.kapacitetOsobnihVozila = int.Parse(podaciRetka[9]);
-            noviBrod.kapacitetTereta = float.Parse(podaciRetka[10].Replace(',', '.'));
+            noviBrod.kapacitetTereta = double.Parse(podaciRetka[10].Replace(',', '.'));
 
             ZajednickeMetode.dohvatiVrstuLuke(noviBrod.vrsta);
 
