@@ -107,7 +107,8 @@ namespace ttomiek_zadaca_1.ConcrreteFM
 
             if (najboljiVezovi.Count == 1)
             {
-                ispisNajboljeg(noviBrod, najboljiVezovi[0]);
+                //Testiranje
+                //ispisNajboljeg(noviBrod, najboljiVezovi[0]);
                 return najboljiVezovi[0];
             }
             else
@@ -120,7 +121,8 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                         index = z;
                     }
                 }
-                ispisNajboljeg(noviBrod, najboljiVezovi[index]);
+                //Testiranje
+                //ispisNajboljeg(noviBrod, najboljiVezovi[index]);
                 return najboljiVezovi[index];
             }
         }

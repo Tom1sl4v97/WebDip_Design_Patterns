@@ -6,7 +6,7 @@ namespace ttomiek_zadaca_1.komandaV
 {
     public class ProvjeraZauzetihVezova
     {
-        public static List<ZahtjevRezervacije> provjeraVezova(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva)
+        public static List<ZahtjevRezervacije> provjeraVezova(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva, int index)
         {
             int pocetniDan = (int)datumOd.DayOfWeek;
             int krajnjiDan = (int)datumDo.DayOfWeek;
@@ -26,7 +26,7 @@ namespace ttomiek_zadaca_1.komandaV
                 if (pocetnoVrijeme <= datumDo && krajnjeVrijeme >= datumOd)
                 {
                     pomocnaListaZahtjeva.Remove(zahtjev);
-                    ZajednickeMetode.ispisVeza(vez, "ZAUZET\tod: " + formDate(pocetnoVrijeme) + "\tdo: " + formDate(krajnjeVrijeme));
+                    ZajednickeMetode.ispisVeza(vez, "ZAUZET\tod: " + formDate(pocetnoVrijeme) + "\tdo: " + formDate(krajnjeVrijeme), index);
                     break;
                 }
             }

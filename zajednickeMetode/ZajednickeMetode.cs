@@ -1,4 +1,6 @@
-﻿using ttomiek_zadaca_1.klase;
+﻿using System;
+using System.Reflection;
+using ttomiek_zadaca_1.klase;
 using ttomiek_zadaca_1.singelton_class;
 
 namespace ttomiek_zadaca_1.zajednickeMetode
@@ -9,17 +11,31 @@ namespace ttomiek_zadaca_1.zajednickeMetode
         {
             if (Tablice.Instance.Z)
             {
+                string izgledInfoRetka;
+                
+                if (Tablice.Instance.RB)
+                    izgledInfoRetka = String.Format("{0, 4} | {1,-5} | {2,-10} | {3,-5} | {4,-6} | {5,-7} | {6,-6} | {7,-6} | {8,-10}", "RB", "ID", "OZN. VEZA", "VRSTA", "CIJENA", "DULJINA", "ŠIRINA", "DUBINA", "STATUS");
+                else
+                    izgledInfoRetka = String.Format("{0,-5} | {1,-10} | {2,-5} | {3,-6} | {4,-7} | {5,-6} | {6,-6} | {7,-10}", "ID", "OZN. VEZA", "VRSTA", "CIJENA", "DULJINA", "ŠIRINA", "DUBINA", "STATUS");
+
                 Console.WriteLine("---------------------------------------------------------------------------");
                 Console.WriteLine("Ispis statusa");
-                Console.WriteLine(String.Format("{0,-5} | {1,-10} | {2,-5} | {3,-6} | {4,-7} | {5,-6} | {6,-6} | {7,-10}", "ID", "OZN. VEZA", "VRSTA", "CIJENA", "DULJINA", "ŠIRINA", "DUBINA", "STATUS"));
+                Console.WriteLine(izgledInfoRetka);
                 Console.WriteLine("---------------------------------------------------------------------------");
             }
         }
 
-        public static void ispisVeza(Vez vez, string ostatakPoruke)
+        public static void ispisVeza(Vez vez, string ostatakPoruke, int counter)
         {
+            string ispis;
+
+            if (Tablice.Instance.RB)
+                ispis = String.Format("{0, 4} | {1,5} | {2,-10} | {3,-5} | {4,6} | {5,7} | {6,6} | {7,6} | {8,-10}", counter, vez.id, vez.oznakaVeza, vez.vrsta, vez.cijenaVezaPoSatu, vez.maksimalnaDuljina, vez.maksimalnaSirina, vez.maksimalnaDubina, ostatakPoruke);
+            else
+                ispis = String.Format("{0,5} | {1,-10} | {2,-5} | {3,6} | {4,7} | {5,6} | {6,6} | {7,-10}", vez.id, vez.oznakaVeza, vez.vrsta, vez.cijenaVezaPoSatu, vez.maksimalnaDuljina, vez.maksimalnaSirina, vez.maksimalnaDubina, ostatakPoruke);
+            
             Aplikacija.povecajCounterVezova();
-            Console.WriteLine(String.Format("{0,5} | {1,-10} | {2,-5} | {3,6} | {4,7} | {5,6} | {6,6} | {7,-10}", vez.id, vez.oznakaVeza, vez.vrsta, vez.cijenaVezaPoSatu, vez.maksimalnaDuljina, vez.maksimalnaSirina, vez.maksimalnaDubina, ostatakPoruke));
+            Console.WriteLine(ispis);
         }
 
         public static void ispisPodnozjaStatusa(int broj)
@@ -70,7 +86,7 @@ namespace ttomiek_zadaca_1.zajednickeMetode
             List<Vez> popisZauzetihVezova = new List<Vez>();
             List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
             List<ZahtjevRezervacije> popisZahtjeva = new List<ZahtjevRezervacije>(PodaciDatoteka.Instance.getListaZahtjevaRezervacije());
-            
+            int index = 1;
             foreach (Vez vez in popisSvihVezova)
             {
                 int danUTjednu = (int)trenutnoVrijeme.DayOfWeek;
@@ -99,13 +115,13 @@ namespace ttomiek_zadaca_1.zajednickeMetode
                         break;
                     }
                 }
-                
+
                 if (sviVezovi)
                 {
                     if (!provjera) 
-                        ispisVeza(vez, "ZAUZETI");
+                        ispisVeza(vez, "ZAUZETI", index++);
                     else 
-                        ispisVeza(vez, "SLOBODAN");
+                        ispisVeza(vez, "SLOBODAN", index++);
                 }else
                 {
                     if (!provjera) 
@@ -114,31 +130,6 @@ namespace ttomiek_zadaca_1.zajednickeMetode
                 
             }
             return popisZauzetihVezova;
-        }
-
-        public static void ispisSvihRasporeda()
-        {
-            List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
-
-            Raspored prethodni = new Raspored();
-
-            Console.WriteLine(String.Format("{0,-7} | {1,-7} | {2,-6} | {3,-6} | {4,-20}", "ID-VEZ", "ID-BROD", "OD", "DO", "DANI U TJEDNU"));
-            Console.WriteLine("---------------------------------------------------------------------------");
-
-            string daniUtjednu = sviRasporedi[0].daniUTjednu.ToString();
-            foreach (Raspored r in sviRasporedi)
-            {
-                if (prethodni.idVez == r.idVez && prethodni.idBrod == r.idBrod && prethodni.vrijemeOd == r.vrijemeOd && prethodni.vrijemeDo == r.vrijemeDo)
-                {
-                    daniUtjednu += ", " + r.daniUTjednu;
-                }
-                else
-                {
-                    Console.WriteLine(String.Format("{0,-7} | {1,-7} | {2,-6} | {3,-6} | {4,-20}", prethodni.idVez, prethodni.idBrod, prethodni.vrijemeOd, prethodni.vrijemeDo, daniUtjednu));
-                    daniUtjednu = r.daniUTjednu.ToString();
-                }
-                prethodni = r;
-            }
         }
     }
 }

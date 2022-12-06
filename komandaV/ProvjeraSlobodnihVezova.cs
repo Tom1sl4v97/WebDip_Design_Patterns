@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ttomiek_zadaca_1.klase;
+﻿using ttomiek_zadaca_1.klase;
 using ttomiek_zadaca_1.zajednickeMetode;
 
 namespace ttomiek_zadaca_1.komandaV
 {
     public class ProvjeraSlobodnihVezova
     {
-        public static List<ZahtjevRezervacije> provjeraVezova(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva)
+        public static List<ZahtjevRezervacije> provjeraVezova(Vez vez, DateTime datumOd, DateTime datumDo, List<ZahtjevRezervacije> pomocnaListaZahtjeva, int index)
         {
             string dioOdgovora = "SLOBODAN\t";
             bool provjeraVeza = true;
@@ -42,7 +37,10 @@ namespace ttomiek_zadaca_1.komandaV
             }
 
             if (provjeraVeza) dioOdgovora += "u potpunosti";
-            if (nemojPreskocitiZapis) ZajednickeMetode.ispisVeza(vez, dioOdgovora);
+            if (nemojPreskocitiZapis)
+            {
+                ZajednickeMetode.ispisVeza(vez, dioOdgovora, index);
+            }
 
             return pomocnaListaZahtjeva;
         }

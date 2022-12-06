@@ -10,7 +10,8 @@ namespace ttomiek_zadaca_1.visitor
 {
     public class ConcreteVisitor1 : Visitor
     {
-        private int broj = 0;
+        private int broj = 1;
+        private int brojPremaVrsti = 0;
 
         public override void VisitConcreteElementZauzetost(ConcreteElementZauzetost concreteElementZauzetost)
         {
@@ -21,18 +22,18 @@ namespace ttomiek_zadaca_1.visitor
             
             foreach (Vez vez in popisZauzetihVezova)
             {
-                ZajednickeMetode.ispisVeza(vez, "ZAUZETI");
+                ZajednickeMetode.ispisVeza(vez, "ZAUZETI", broj++);
             }
 
-            broj = popisZauzetihVezova.Count;
-            Aplikacija.povecajUkupniBrojZauzetihVezova(broj);
+            brojPremaVrsti = popisZauzetihVezova.Count;
+            Aplikacija.povecajUkupniBrojZauzetihVezova(broj - 1);
         }
 
         public override void VisitConcreteElementRedniBroj(ConcreteElementRedniBroj concreteElementRedniBroj)
         {
             if (Tablice.Instance.RB)
             {
-                Console.WriteLine(String.Format("{0,-21} {1,52}", "UKUPNO VRSTE VEZA " + concreteElementRedniBroj.vrstaVeza + ":", broj));
+                Console.WriteLine(String.Format("{0,-21} {1,52}", "UKUPNO VRSTE VEZA " + concreteElementRedniBroj.vrstaVeza + ":", brojPremaVrsti));
             }
         }
     }
