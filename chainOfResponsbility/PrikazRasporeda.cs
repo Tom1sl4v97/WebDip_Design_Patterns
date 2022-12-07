@@ -23,6 +23,12 @@ namespace ttomiek_zadaca_1.chainOfResponsbility
 
             ispisZaglavlja();
 
+            if (sviRasporedi.Count == 0)
+            {
+                BrojacGreske.Instance.IspisGreske("Raspored nije učitani.");
+                return;
+            }
+
             string daniUtjednu = sviRasporedi[0].daniUTjednu.ToString();
             int index = 0;
             foreach (Raspored r in sviRasporedi)

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System;
+using System.Diagnostics.Metrics;
 using ttomiek_zadaca_1.klase;
 using ttomiek_zadaca_1.zajednickeMetode;
 
@@ -36,7 +37,7 @@ namespace ttomiek_zadaca_1.komandaV
         private static void ispisiZautetostRaspored(int pocetniDan, int krajnjiDan, Vez vez, DateTime datumOd, DateTime datumDo)
         {
             List<Raspored> sviRasporedi = new List<Raspored>(PodaciDatoteka.Instance.getListaRasporeda());
-            
+            int index = 1;
             for (int i = pocetniDan; i <= krajnjiDan; i++)
             {
                 List<Raspored> popisZauzetih = new List<Raspored>();
@@ -53,7 +54,7 @@ namespace ttomiek_zadaca_1.komandaV
                 }
                 if (popisZauzetih.Count > 0)
                 {
-                    Console.WriteLine("Tu sam");
+                    ZajednickeMetode.ispisVeza(vez, "ZAUZET\tod: " + formDate(datumOd) + "\tdo: " + formDate(datumDo), index++);
                 }
             }
 

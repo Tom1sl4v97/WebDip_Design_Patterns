@@ -62,7 +62,7 @@ public class Aplikacija
 
     private static void provjeriUcitajUneseniString(string uneseniPodaci)
     {
-        string pattern = @"^(?=.*\s?-l (?<luka>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-v (?<vez>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-b (?<brod>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-r (?<raspored>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-m (?<mol>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-k (?<kanal>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-mv (?<molVezovi>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000})).+";
+        string pattern = @"^(?=.*\s?-l (?<luka>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-v (?<vez>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-b (?<brod>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-r (?<raspored>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))?(?=.*\s?-m (?<mol>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-k (?<kanal>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000}))(?=.*\s?-mv (?<molVezovi>[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]{3,1000})).+";
         var regex = new Regex(pattern);
 
         while (true)
@@ -81,8 +81,8 @@ public class Aplikacija
                     NaziviDatoteka.Instance.mol = match.Groups["mol"].Value;
                     NaziviDatoteka.Instance.molVezovi = match.Groups["molVezovi"].Value;
 
-                    //string? putanja = Directory.GetCurrentDirectory();
-                    string? putanja = "C:\\Users\\franj\\OneDrive\\Desktop\\podaci";
+                    string? putanja = Directory.GetCurrentDirectory();
+                    //string? putanja = "C:\\Users\\franj\\OneDrive\\Desktop\\podaci";
 
                     NaziviDatoteka.Instance.putanjaPrograma = putanja;
 

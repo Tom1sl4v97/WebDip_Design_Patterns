@@ -20,7 +20,7 @@ namespace ttomiek_zadaca_1.chainOfResponsbility
         {
             List<Brod> popisBrodova = new List<Brod>(PodaciDatoteka.Instance.getListaBrodova());
             ispisZaglavlja();
-            int index = 0;
+            int index = 1;
             foreach (Brod brod in popisBrodova)
             {
                 ispisRetka(brod, index++);
