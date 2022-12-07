@@ -31,10 +31,12 @@ namespace ttomiek_zadaca_1.observer
             else
             {
                 ispisZaglavlja();
+                int index = 1;
+                List<Brod> popisSvihBrodova = new List<Brod>(PodaciDatoteka.Instance.getListaBrodova());
                 foreach (DnevnikRada dr in dnevnikRada)
                 {
-                    Brod podaciBroda = PodaciDatoteka.Instance.getListaBrodova().Find(x => x.id == dr.idBrod);
-                    ispisiTablicu(podaciBroda);
+                    Brod podaciBroda = popisSvihBrodova.Find(x => x.id == dr.idBrod);
+                    ispisiTablicu(podaciBroda, index++);
                 }
                 ispisPodnozja(subjectKanala.TrenutniKapacitet);
             }
@@ -44,16 +46,30 @@ namespace ttomiek_zadaca_1.observer
         {
             if (Tablice.Instance.Z)
             {
+                string podaciZaglavlja;
+
+                if (Tablice.Instance.RB)
+                    podaciZaglavlja = String.Format("{0, 4} | {1,-8} | {2,-12} | {3,-15} | {4,-11}", "RB", "ID BRODA", "OZNAKA BRODA", "NAZIV BRODA", "VRSTA BRODA");
+                else
+                    podaciZaglavlja = String.Format("{0,-8} | {1,-12} | {2,-15} | {3,-11}", "ID BRODA", "OZNAKA BRODA", "NAZIV BRODA", "VRSTA BRODA");
+                        
                 Console.WriteLine("----------------------------------------------------------");
                 Console.WriteLine("Brodovi koji se obaviještavaju");
-                Console.WriteLine(String.Format("{0,-8} | {1,-12} | {2,-15} | {3,-11}", "ID BRODA", "OZNAKA BRODA", "NAZIV BRODA", "VRSTA BRODA"));
+                Console.WriteLine(podaciZaglavlja);
                 Console.WriteLine("----------------------------------------------------------");
             }
         }
 
-        private void ispisiTablicu(Brod? podaciBroda)
+        private void ispisiTablicu(Brod podaciBroda, int index)
         {
-            Console.WriteLine(String.Format("{0,8} | {1,-12} | {2,-15} | {3,-11}", podaciBroda.id, podaciBroda.oznakaBroda, podaciBroda.naziv, podaciBroda.vrsta));
+            string ispisRetka;
+
+            if (Tablice.Instance.RB)
+                ispisRetka = String.Format("{0, 4} | {1,8} | {2,-12} | {3,-15} | {4,-11}", index, podaciBroda.id, podaciBroda.oznakaBroda, podaciBroda.naziv, podaciBroda.vrsta);
+            else
+                ispisRetka = String.Format("{0,8} | {1,-12} | {2,-15} | {3,-11}", podaciBroda.id, podaciBroda.oznakaBroda, podaciBroda.naziv, podaciBroda.vrsta);
+
+            Console.WriteLine(ispisRetka);
         }
 
         private void ispisPodnozja(int broj)

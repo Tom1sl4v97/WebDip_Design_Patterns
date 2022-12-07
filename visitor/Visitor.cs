@@ -8,8 +8,7 @@ namespace ttomiek_zadaca_1.visitor
 {
     public abstract class Visitor
     {
-        public abstract void VisitConcreteElementZ(ConcreteElementZ concreteElementZ);
-        public abstract void VisitConcreteElementP(ConcreteElementP concreteElementP);
-        public abstract void VisitConcreteElementRB(ConcreteElementRB concreteElementRB);
+        public abstract void VisitConcreteElementZauzetost(ConcreteElementZauzetost concreteElementZauzetost);
+        public abstract void VisitConcreteElementRedniBroj(ConcreteElementRedniBroj concreteElementRedniBroj);
     }
 }

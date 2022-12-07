@@ -48,9 +48,9 @@ namespace ttomiek_zadaca_1.ConcrreteFM
             noviVez.oznakaVeza = podaciRetka[1];
             noviVez.vrsta = podaciRetka[2];
             noviVez.cijenaVezaPoSatu = decimal.Parse(podaciRetka[3]);
-            noviVez.maksimalnaDuljina = int.Parse(podaciRetka[4]);
-            noviVez.maksimalnaSirina = int.Parse(podaciRetka[5]);
-            noviVez.maksimalnaDubina = int.Parse(podaciRetka[6]);
+            noviVez.maksimalnaDuljina = double.Parse(podaciRetka[4].Replace(',', '.'));
+            noviVez.maksimalnaSirina = double.Parse(podaciRetka[5].Replace(',', '.'));
+            noviVez.maksimalnaDubina = double.Parse(podaciRetka[6].Replace(',', '.'));
 
             return noviVez;
         }

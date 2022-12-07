@@ -87,11 +87,14 @@ namespace ttomiek_zadaca_1.ConcrreteFM
                 pomocniRaspored.idBrod = noviRaspored.idBrod;
                 int danUTjednu = int.Parse(pripremaDana[i]);
                 pomocniRaspored.daniUTjednu = danUTjednu;
+
+                if (noviRaspored.vrijemeOd > noviRaspored.vrijemeDo)
+                    throw new Exception("Vrijeme od: " + noviRaspored.vrijemeOd + " je veće od vremena do: " + noviRaspored.vrijemeDo);
+
                 pomocniRaspored.vrijemeOd = noviRaspored.vrijemeOd;
                 pomocniRaspored.vrijemeDo = noviRaspored.vrijemeDo;
 
                 PodaciDatoteka.Instance.addNoviRaspored(pomocniRaspored);
-
             }
         }
     }
