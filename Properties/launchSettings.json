@@ -2,7 +2,7 @@
   "profiles": {
     "ttomiek_zadaca_1": {
       "commandName": "Project",
-      "commandLineArgs": "-b DZ_2_brod.csv -v DZ_2_vez.csv -l DZ_2_luka.csv -m DZ_2_mol.csv -k DZ_2_kanal.csv -mv DZ_2_mol_vez.csv"
+      "commandLineArgs": "-b DZ_2_brod.csv -v DZ_2_vez.csv -l DZ_2_luka.csv -m DZ_2_mol.csv -k DZ_2_kanal.csv -mv DZ_2_mol_vez.csv -r DZ_2_raspored.csv -br 60 -vt 50:50 -pd R:P"
     }
   }
 }
